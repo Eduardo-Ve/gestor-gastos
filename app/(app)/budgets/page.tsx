@@ -169,7 +169,7 @@ export default function BudgetsPage() {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value: number) => clp(value)}
+                  formatter={(value) => (typeof value === "number" ? clp(value) : "")}
                   contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid var(--border)" }}
                 />
               </PieChart>
