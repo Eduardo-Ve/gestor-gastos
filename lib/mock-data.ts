@@ -1,13 +1,20 @@
-// lib/mock-data.ts
-export const mockTransactions = [
-  { id: "1", type: "expense", amount: 15000, category: "Alimentación", date: "2026-08-01", description: "Supermercado", paymentMethod: "Débito" },
-  // ya obviamente esto es una transacción 
+import type { Transaction, Category } from "./types";
+
+export const mockCategories: Category[] = [
+  { id: "cat-1", name: "Alimentación", type: "expense", color: "#f97316" },
+  { id: "cat-2", name: "Transporte", type: "expense", color: "#6366f1" },
+  { id: "cat-3", name: "Sueldo", type: "income", color: "#10b981" },
 ];
 
-export const mockCategories = [
-  { id: "1", name: "Alimentación", type: "expense", color: "#f97316" },
-  // y esto es una categoria
+export const mockTransactions: Transaction[] = [
+  {
+    id: "1",
+    userId: "mock-user-id",
+    type: "expense",
+    amount: 15000,
+    categoryId: "cat-1",
+    date: new Date("2026-08-01"),
+    description: "Supermercado",
+    paymentMethod: "debit",
+  },
 ];
-
-
-//primeros datos de prueba que voy a mandar para ir probando
