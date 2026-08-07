@@ -3,7 +3,7 @@ import { ICON_OPTIONS, COLOR_OPTIONS } from "./icon-map";
 
 export const transactionSchema = z.object({
   type: z.enum(["income", "expense"]),
-  amount: z.coerce.number().positive().max(999_999_999),
+  amount: z.coerce.number().int().positive().max(999_999_999),
   categoryId: z.string().min(1, "Selecciona una categoría"),
   date: z.coerce.date(),
   description: z.string().trim().max(200).optional(),

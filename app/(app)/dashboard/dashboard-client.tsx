@@ -21,9 +21,10 @@ type Props = {
   budgets: { id: string; limit: number; spent: number; category: { name: string; color: string; icon: string } }[];
   monthly: { mes: string; ingresos: number; gastos: number }[];
   recent: { id: string; description: string | null; amount: number; type: string; date: Date; category: { name: string } }[];
+  user?: { name?: string | null };
 };
 
-export default function DashboardClient({ summary, budgets, monthly, recent }: Props) {
+export default function DashboardClient({ summary, budgets, monthly, recent, user }: Props) {
   const { income, expenses, balance } = summary;
   const balancePct = income > 0 ? Math.round((balance / income) * 100) : 0;
   const monthLabel = new Date().toLocaleDateString("es-CL", { month: "long" });
@@ -33,7 +34,7 @@ export default function DashboardClient({ summary, budgets, monthly, recent }: P
       <main className="flex-1 px-5 py-6 md:px-8 md:py-8 max-w-6xl">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-lg font-semibold tracking-tight capitalize">Resumen de {monthLabel}</h1>
+            <h2 className="text-lg font-semibold tracking-tight capitalize">Resumen de {monthLabel}</h2>
             <p className="text-sm text-muted-foreground">Cómo va tu mes hasta ahora</p>
           </div>
         </div>

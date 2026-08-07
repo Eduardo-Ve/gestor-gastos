@@ -3,7 +3,9 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 
-export async function register(formData: FormData) {
+export type RegisterState = { error?: string } | undefined;
+
+export async function register(prevState: RegisterState, formData: FormData): Promise<RegisterState> {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const name = formData.get("name") as string;

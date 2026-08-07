@@ -8,7 +8,7 @@ import type { Category } from "@/lib/types";
 
 type CategoryModalProps = {
   onClose: () => void;
-  onSaved: (category: Category) => void;
+  onSaved: ()=> void;
   editingCategory?: Category | null;
 };
 
@@ -42,7 +42,7 @@ export function CategoryModal({ onClose, onSaved, editingCategory }: CategoryMod
       return;
     }
 
-    if (result.data) onSaved(result.data);
+    if (result.data) onSaved();
   }
 
   return (

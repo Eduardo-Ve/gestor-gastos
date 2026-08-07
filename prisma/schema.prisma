@@ -28,7 +28,7 @@ model Category {
   userId        String
   user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions  Transaction[]
-  budget        Budget?
+  budgets       Budget[]
   createdAt     DateTime         @default(now())
 
   @@index([userId])
@@ -52,14 +52,14 @@ model Transaction {
 }
 
 model Budget {
-  id          String    @id @default(cuid())
-  limit       Int
-  categoryId  String    @unique
-  category    Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  month       Int
-  year        Int
+  id         String   @id @default(cuid())
+  limit      Int?
+  categoryId String   // quita el @unique de aquí
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  month      Int
+  year       Int
 
   @@unique([categoryId, month, year])
 }

@@ -74,3 +74,39 @@ export async function getRecentTransactions(userId: string, take = 4) {
     take,
   });
 }
+export async function getBudgetsPageData(userId: string) {
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const year = now.getFullYear();
+  const start = new Date(year, month - 1, 1);
+  const end = new Date(year, month, 1);
+
+  const [categories, spentResult, recentTxs] = await Promise.all([
+    prisma.category.findMany({
+      where: { userId, type: "expense" },
+      include: { budgets: { where: { month, year } } },
+    }),
+    prisma.transaction.groupBy({
+      by: ["categoryId"],
+      where: { userId, type: "expense", date: { gte: start, lt: end } },
+      _sum: { amount: true },
+    }),
+    prisma.transaction.findMany({
+      where: { userId, type: "expense", date: { gte: start, lt: end } },
+      orderBy: { date: "desc" },
+    }),
+  ]);
+
+  const spentMap = Object.fromEntries(spentResult.map((s) => [s.categoryId, s._sum.amount ?? 0]));
+
+  const budgets = categories.map((c) => ({
+    id: c.id,
+    name: c.name,
+    icon: c.icon,
+    color: c.color,
+    limit: c.budgets[0]?.limit ?? 0,
+    spent: spentMap[c.id] ?? 0,
+  }));
+
+  return { budgets, recentTxs };
+}
