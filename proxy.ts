@@ -1,13 +1,24 @@
-// proxy.ts (en la raíz, reemplaza a middleware.ts)
+// proxy.ts 
 import NextAuth from "next-auth";
+import { NextResponse } from "next/server";
 import { authConfig } from "@/lib/auth.config";
 
 const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
-  // puedes dejar el callback vacío si solo quieres proteger rutas
+  if (!req.auth) {
+    const loginUrl = new URL("/login", req.nextUrl.origin);
+    loginUrl.searchParams.set("callbackUrl", req.nextUrl.pathname);
+    return NextResponse.redirect(loginUrl);
+  }
 });
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/transactions/:path*", "/categories/:path*", "/budgets/:path*"],
+  matcher: [
+    "/dashboard/:path*",
+    "/transactions/:path*",
+    "/categories/:path*",
+    "/budgets/:path*",
+    "/settings/:path*",
+  ],
 };
