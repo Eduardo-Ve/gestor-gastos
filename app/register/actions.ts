@@ -2,7 +2,7 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
-
+import { seedDefaultCategories } from "@/lib/seed-categories";
 export type RegisterState = { error?: string } | undefined;
 
 export async function register(prevState: RegisterState, formData: FormData): Promise<RegisterState> {
@@ -16,7 +16,7 @@ export async function register(prevState: RegisterState, formData: FormData): Pr
   }
 
   const hashed = await bcrypt.hash(password, 10);
-  await prisma.user.create({ data: { email, password: hashed, name } });
-
+  const user = await prisma.user.create({ data: { email, password: hashed, name } });
+  await seedDefaultCategories(user.id);
   redirect("/login");
 }

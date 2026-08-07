@@ -6,7 +6,8 @@ import {
   getMonthlyEvolution,
   getRecentTransactions,
 } from "@/lib/queries";
-import DashboardClient from "./dashboard-client";
+import DashboardClient from "./dashboard-client"; 
+
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -21,6 +22,6 @@ export default async function DashboardPage() {
   ]);
 
   return (
-    <DashboardClient summary={summary} budgets={budgets} monthly={monthly} recent={recent} />
+    <DashboardClient summary={summary} budgets={budgets} monthly={monthly} recent={recent} user={session?.user} />
   );
 }

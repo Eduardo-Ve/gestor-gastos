@@ -1,5 +1,6 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { signOut } from "next-auth/react";
 import { updateProfile, changePassword } from "./actions";
@@ -17,6 +18,7 @@ type Profile = {
 };
 
 export function SettingsClient({ profile }: { profile: Profile }) {
+  const { update } = useSession(); 
   const [name, setName] = useState(profile.name ?? "");
   const [pickedIcon, setPickedIcon] = useState<AvatarIconKey | null>(profile.selectedIcon);
   const [showPicker, setShowPicker] = useState(!profile.hasGoogleAccount || !!profile.selectedIcon);
@@ -29,7 +31,6 @@ export function SettingsClient({ profile }: { profile: Profile }) {
   const [savingPassword, setSavingPassword] = useState(false);
   const [passwordMsg, setPasswordMsg] = useState<{ type: "ok" | "error"; text: string } | null>(null);
 
-  // Preview: si el usuario todavía no tocó el picker, mostramos lo que ya está guardado (foto de Google o ícono actual)
   const previewImage = pickedIcon ? `icon:${pickedIcon}` : profile.image;
 
   async function handleSaveProfile() {
@@ -37,6 +38,8 @@ export function SettingsClient({ profile }: { profile: Profile }) {
     setProfileMsg(null);
     try {
       await updateProfile({ name, avatarIcon: pickedIcon });
+      await update({ name });
+      await update({ name, image: pickedIcon ? `icon:${pickedIcon}` : undefined });
       setProfileMsg("Perfil actualizado.");
     } catch (e) {
       setProfileMsg(e instanceof Error ? e.message : "Error al guardar.");
@@ -140,7 +143,7 @@ export function SettingsClient({ profile }: { profile: Profile }) {
         </p>
         {!profile.hasPassword && (
           <p className="text-xs text-muted-foreground mb-4">
-            Entraste con Google y todavía no tenés contraseña. Podés definir una para poder iniciar sesión también con email.
+            Entraste con Google y todavía no tienes contraseña. Puedes definir una para poder iniciar sesión también con tu email.
           </p>
         )}
 

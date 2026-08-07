@@ -1,5 +1,6 @@
 import type { NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
+import { seedDefaultCategories } from "./seed-categories";
 
 export const authConfig: NextAuthConfig = {
   trustHost: true,
@@ -14,14 +15,26 @@ export const authConfig: NextAuthConfig = {
       },
     }),
   ],
-  callbacks: {
-    jwt({ token, user }) {
-      if (user) token.id = user.id;
-      return token;
-    },
-    session({ session, token }) {
-      session.user.id = token.id as string;
-      return session;
+    events: {
+    async createUser({ user }) {
+      if (user.id) {
+        await seedDefaultCategories(user.id);
+      }
     },
   },
+callbacks: {
+  jwt({ token, user, trigger, session }) {
+    if (user) token.id = user.id;
+    if (trigger === "update" && session) {
+      token.name = session.name;
+      token.picture = session.image;
+    }
+    return token;
+  },
+  session({ session, token }) {
+    session.user.id = token.id as string;
+    session.user.image = token.picture as string;
+    return session;
+  },
+},
 };

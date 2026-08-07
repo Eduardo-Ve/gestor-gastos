@@ -34,7 +34,10 @@ export default function DashboardClient({ summary, budgets, monthly, recent, use
       <main className="flex-1 px-5 py-6 md:px-8 md:py-8 max-w-6xl">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-lg font-semibold tracking-tight capitalize">Resumen de {monthLabel}</h2>
+            <h1>
+              Hola, <span>{user?.name}</span>
+            </h1>
+            <h2 className="text-lg font-semibold tracking-tight capitalize">Tu resumen de {monthLabel}</h2>
             <p className="text-sm text-muted-foreground">Cómo va tu mes hasta ahora</p>
           </div>
         </div>
