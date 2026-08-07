@@ -14,4 +14,5 @@ export type Category = {
   name: string;
   type: "income" | "expense";
   color: string;
+  icon: string; // key de /lib/icon-map.ts, ej: "Utensils"
 };

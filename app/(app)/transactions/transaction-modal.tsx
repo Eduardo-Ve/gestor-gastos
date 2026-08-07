@@ -8,7 +8,7 @@ import type { Category, Transaction } from "@/lib/types";
 type TransactionModalProps = {
   categories: Category[];
   onClose: () => void;
-  onCreated: (transaction: Transaction) => void;
+  onCreated: () => void;
 };
 
 export function TransactionModal({ categories, onClose, onCreated }: TransactionModalProps) {
@@ -39,7 +39,7 @@ export function TransactionModal({ categories, onClose, onCreated }: Transaction
     }
 
     if (result.data) {
-      onCreated(result.data);
+      onCreated();
     }
   }
 
