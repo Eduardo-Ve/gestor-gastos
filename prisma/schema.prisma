@@ -20,41 +20,45 @@ enum PaymentMethod {
 }
 
 model Category {
-  id            String           @id @default(cuid())
+  id            String          @id @default(cuid())
   name          String
   color         String
   icon          String
   type          TransactionType
   userId        String
-  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions  Transaction[]
   budgets       Budget[]
-  createdAt     DateTime         @default(now())
+  createdAt     DateTime        @default(now())
+  fixedExpenses FixedExpense[]
 
   @@index([userId])
 }
 
 model Transaction {
-  id            String           @id @default(cuid())
-  description   String?
-  amount        Int
-  date          DateTime
-  type          TransactionType
-  paymentMethod PaymentMethod
-  categoryId    String
-  category      Category         @relation(fields: [categoryId], references: [id])
-  userId        String
-  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt     DateTime         @default(now())
+  id             String          @id @default(cuid())
+  description    String?
+  amount         Int
+  date           DateTime
+  type           TransactionType
+  paymentMethod  PaymentMethod
+  categoryId     String
+  category       Category        @relation(fields: [categoryId], references: [id])
+  fixedExpenseId String?
+  fixedExpense   FixedExpense?   @relation(fields: [fixedExpenseId], references: [id])
+  userId         String
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt      DateTime        @default(now())
 
   @@index([userId, date])
   @@index([categoryId])
+  @@index([fixedExpenseId])
 }
 
 model Budget {
   id         String   @id @default(cuid())
   limit      Int?
-  categoryId String   // quita el @unique de aquí
+  categoryId String // quita el @unique de aquí
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   userId     String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -63,6 +67,7 @@ model Budget {
 
   @@unique([categoryId, month, year])
 }
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -101,13 +106,30 @@ model User {
   id            String         @id @default(cuid())
   email         String         @unique
   name          String?
-  password      String?        // null si entró solo con Google
+  password      String? // null si entró solo con Google
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
   categories    Category[]
+  fixedExpenses FixedExpense[]
   transactions  Transaction[]
   budgets       Budget[]
   createdAt     DateTime       @default(now())
+}
+
+model FixedExpense {
+  id              String        @id @default(cuid())
+  name            String // "Netflix", "Arriendo", "ENEL"
+  estimatedAmount Int
+  dayOfMonth      Int // día del mes en que normalmente se paga (1-31)
+  isActive        Boolean       @default(true)
+  categoryId      String
+  category        Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions    Transaction[]
+  createdAt       DateTime      @default(now())
+
+  @@index([userId])
 }
