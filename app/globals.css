@@ -136,3 +136,18 @@ input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-primary-foreground text-sm font-medium py-2 rounded-md
+           transition-all hover:opacity-90 hover:shadow-md;
+  }
+
+  .btn-outline {
+    @apply border border-border text-sm font-medium py-2 rounded-md
+           transition-all hover:bg-muted/40 hover:shadow-sm;
+  }
+
+  .btn-icon {
+    @apply text-muted-foreground transition-colors hover:text-foreground;
+  }
+}
