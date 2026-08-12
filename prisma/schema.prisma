@@ -36,19 +36,20 @@ model Category {
 }
 
 model Transaction {
-  id             String          @id @default(cuid())
-  description    String?
-  amount         Int
-  date           DateTime
-  type           TransactionType
-  paymentMethod  PaymentMethod
-  categoryId     String
-  category       Category        @relation(fields: [categoryId], references: [id])
-  fixedExpenseId String?
-  fixedExpense   FixedExpense?   @relation(fields: [fixedExpenseId], references: [id])
-  userId         String
-  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt      DateTime        @default(now())
+  id                  String               @id @default(cuid())
+  description         String?
+  amount              Int
+  date                DateTime
+  type                TransactionType
+  paymentMethod       PaymentMethod
+  categoryId          String
+  category            Category             @relation(fields: [categoryId], references: [id])
+  fixedExpenseId      String?
+  fixedExpense        FixedExpense?        @relation(fields: [fixedExpenseId], references: [id])
+  userId              String
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt           DateTime             @default(now())
+  fixedExpensePayment FixedExpensePayment?
 
   @@index([userId, date])
   @@index([categoryId])
@@ -119,17 +120,33 @@ model User {
 }
 
 model FixedExpense {
-  id              String        @id @default(cuid())
-  name            String // "Netflix", "Arriendo", "ENEL"
-  estimatedAmount Int
-  dayOfMonth      Int // día del mes en que normalmente se paga (1-31)
-  isActive        Boolean       @default(true)
-  categoryId      String
-  category        Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  userId          String
-  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  transactions    Transaction[]
-  createdAt       DateTime      @default(now())
+  id           String                @id @default(cuid())
+  description  String
+  amount       Decimal
+  dueDay       Int
+  categoryId   String
+  active       Boolean               @default(true)
+  userId       String
+  transactions Transaction[]
+  category     Category              @relation(fields: [categoryId], references: [id])
+  user         User                  @relation(fields: [userId], references: [id])
+  payments     FixedExpensePayment[]
 
-  @@index([userId])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FixedExpensePayment {
+  id             String   @id @default(cuid())
+  fixedExpenseId String
+  period         DateTime
+  transactionId  String?  @unique
+
+  fixedExpense FixedExpense @relation(fields: [fixedExpenseId], references: [id], onDelete: Cascade)
+  transaction  Transaction? @relation(fields: [transactionId], references: [id])
+
+  paidAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@unique([fixedExpenseId, period])
 }

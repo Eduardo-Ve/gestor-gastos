@@ -4,9 +4,11 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, CheckCircle2, Circle, Trash2, Pencil } from "lucide-react";
 import { getCategoryIcon } from "@/lib/icon-map";
-import { toggleFixedExpenseActive, deleteFixedExpense } from "@/lib/actions/fixed-expenses";
+import { toggleFixedExpenseActive, deleteFixedExpense, toggleFixedExpensePaid } from "@/lib/actions/fixed-expenses";
+
 import { FixedExpenseEditorModal } from "./fixed-expense-editor-modal";
 import type { Category } from "@prisma/client";
+
 
 type FixedExpenseItem = {
   id: string;
@@ -52,8 +54,8 @@ export default function FixedExpensesClient({ fixedExpenses, categories }: Props
     router.refresh();
   }
 
-  async function handleToggle(id: string, current: boolean) {
-    await toggleFixedExpenseActive(id, !current);
+  async function handleTogglePaid(id: string) {
+    await toggleFixedExpensePaid(id);
     router.refresh();
   }
 
@@ -110,7 +112,7 @@ export default function FixedExpensesClient({ fixedExpenses, categories }: Props
               return (
                 <div key={f.id} className={`flex items-center justify-between px-4 py-3 ${!f.isActive ? "opacity-50" : ""}`}>
                   <div className="flex items-center gap-3">
-                    <button onClick={() => handleToggle(f.id, f.isActive)} title={f.isActive ? "Desactivar" : "Activar"}>
+                    <button onClick={() => handleTogglePaid(f.id)} title={f.paidThisMonth ? "Marcar como no pagado" : "Marcar como pagado"}>
                       {f.paidThisMonth ? (
                         <CheckCircle2 size={18} className="text-emerald-500" />
                       ) : (
@@ -119,7 +121,7 @@ export default function FixedExpensesClient({ fixedExpenses, categories }: Props
                     </button>
                     <div className="h-8 w-8 rounded-md flex items-center justify-center shrink-0" style={{ backgroundColor: `${f.categoryColor}15` }}>
                       <Icon size={16} style={{ color: f.categoryColor }} />
-                    </div>
+                    </div>©
                     <div>
                       <p className="text-sm font-medium">{f.name}</p>
                       <p className="text-[11px] text-muted-foreground">
