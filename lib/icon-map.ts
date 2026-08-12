@@ -1,13 +1,13 @@
 import {
   Utensils, Car, Film, HeartPulse, GraduationCap, Home,
   ShoppingBag, Plane, Gift, Smartphone, Dumbbell, Wallet,
-  Briefcase, TrendingUp, Circle, type LucideIcon,
+  Briefcase, TrendingUp, PawPrint, Landmark, PiggyBank,Gamepad2, ShoppingBasket, Parasol, Banknote, Circle, type LucideIcon,
 } from "lucide-react";
 
 export const ICON_MAP: Record<string, LucideIcon> = {
   Utensils, Car, Film, HeartPulse, GraduationCap, Home,
   ShoppingBag, Plane, Gift, Smartphone, Dumbbell, Wallet,
-  Briefcase, TrendingUp,
+  Briefcase, TrendingUp, PawPrint, Landmark, PiggyBank, Gamepad2, ShoppingBasket, Parasol, Banknote, 
 };
 
 // Para el selector visual del formulario
@@ -27,4 +27,10 @@ export const COLOR_OPTIONS = [
   "#6366f1", // indigo
   "#8b5cf6", // violet
   "#0ea5e9", // sky
+  "#3b82f6", // blue
+  "#2563eb", // royal blue
+  "#e11d48", // fuchsia
+  "#db2777", // pink
+  "#facc15", // yellow
+  "#ae1ea4", // cambie el color corregir / nota para mi 
 ];

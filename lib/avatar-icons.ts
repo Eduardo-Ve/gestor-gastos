@@ -1,5 +1,5 @@
 // lib/avatar-icons.ts
-import { User, Cat, Dog, Ghost, Rocket, Star, Heart, Bot, Smile, Sun } from "lucide-react";
+import { User, Cat, Dog, Ghost, Rocket, Star, Heart, Bot, Smile, Sun, Swords } from "lucide-react";
 
 export const AVATAR_ICONS = {
   user: User,
@@ -12,6 +12,7 @@ export const AVATAR_ICONS = {
   bot: Bot,
   smile: Smile,
   sun: Sun,
+  swords: Swords
 } as const;
 
 
@@ -26,6 +27,7 @@ export const AVATAR_COLORS: Record<AvatarIconKey, string> = {
   bot: "bg-teal-500",
   smile: "bg-lime-500",
   sun: "bg-fuchsia-500",
+  swords: "bg-red-500"
 };
 
 export type AvatarIconKey = keyof typeof AVATAR_ICONS;
