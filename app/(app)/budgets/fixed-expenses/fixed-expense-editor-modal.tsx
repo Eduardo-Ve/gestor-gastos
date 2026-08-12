@@ -63,7 +63,7 @@ export function FixedExpenseEditorModal({ categories, editingItem, onClose, onSa
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Netflix, Arriendo, ENEL..."
+              placeholder="Netflix, Spotify, Internet, etc."
               className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm"
               required
             />

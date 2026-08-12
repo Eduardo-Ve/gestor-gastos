@@ -77,14 +77,16 @@ export default function BudgetsClient({ budgets, recentTxs }: Props) {
         <div>
           <h1 className="text-lg font-semibold tracking-tight">Presupuestos</h1>
           <p className="text-sm text-muted-foreground">Control de límites por categoría</p>
-        </div>
+        </div>     
         <button
           onClick={() => setEditorOpen(true)}
           className="flex items-center gap-1.5 bg-primary text-primary-foreground text-sm font-medium px-3 py-2 rounded-md hover:opacity-90 transition-opacity"
         >
           <Plus size={15} /> Ajustar presupuestos
         </button>
+
       </div>
+      
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         <div className="bg-card border border-border rounded-lg p-4">

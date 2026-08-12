@@ -110,6 +110,7 @@ export async function getBudgetsPageData(userId: string) {
 
   return { budgets, recentTxs };
 }
+
 export async function getFixedExpensesPageData(userId: string) {
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -124,7 +125,7 @@ export async function getFixedExpensesPageData(userId: string) {
           where: { date: { gte: startOfMonth, lte: endOfMonth } },
         },
       },
-      orderBy: { dayOfMonth: "asc" },
+      orderBy: { dueDay: "asc" },
     }),
     prisma.category.findMany({
       where: { userId, type: "expense" },
@@ -134,16 +135,16 @@ export async function getFixedExpensesPageData(userId: string) {
 
   const items = fixedExpenses.map((fe) => ({
     id: fe.id,
-    name: fe.name,
-    estimatedAmount: fe.estimatedAmount,
-    dayOfMonth: fe.dayOfMonth,
-    isActive: fe.isActive,
+    name: fe.description,
+    estimatedAmount: Number(fe.amount),
+    dayOfMonth: fe.dueDay,
+    isActive: fe.active,
     categoryId: fe.categoryId,
     categoryName: fe.category.name,
     categoryColor: fe.category.color,
     categoryIcon: fe.category.icon,
     paidThisMonth: fe.transactions.length > 0,
-    paidAmount: fe.transactions.reduce((sum, t) => sum + t.amount, 0),
+    paidAmount: Number(fe.transactions.reduce((sum, t) => sum + t.amount, 0)),
   }));
 
   return { fixedExpenses: items, categories };
