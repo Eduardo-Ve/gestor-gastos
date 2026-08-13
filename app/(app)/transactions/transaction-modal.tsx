@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { createTransaction } from "./actions";
+import Link from "next/link";
 import type { Category, Transaction } from "@/lib/types";
 
 type TransactionModalProps = {
@@ -137,12 +138,20 @@ export function TransactionModal({ categories, onClose, onCreated }: Transaction
               className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
             >
               <option value="debit">Débito</option>
-              <option value="credit">Crédito</option>
+              
               <option value="cash">Efectivo</option>
               <option value="transfer">Transferencia</option>
             </select>
           </div>
-
+{type === "expense" && (
+  <p className="text-xs text-muted-foreground -mt-1">
+    ¿Pagaste con tarjeta de crédito?{" "}
+    <Link href="/credit-card/new-purchase" className="text-foreground underline hover:opacity-80">
+      Regístralo acá
+    </Link>{" "}
+    para trackear las cuotas.
+  </p>
+)}
           {errors.general && <p className="text-xs text-rose-500">{errors.general[0]}</p>}
 
           <div className="flex gap-2 mt-2">
