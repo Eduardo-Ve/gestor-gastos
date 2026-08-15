@@ -69,8 +69,10 @@ export default function CreditCardClient({ cards, pageData, categories }: Props)
         <div className="flex flex-col items-center justify-center text-center py-20 gap-3">
           <CreditCardIcon size={32} className="text-muted-foreground" />
           <p className="text-sm font-medium">Aún no tienes una tarjeta configurada</p>
+
           <p className="text-xs text-muted-foreground max-w-xs">
             Configura tu tarjeta de crédito para empezar a trackear tus compras en cuotas.
+            
           </p>
           <button
             onClick={() => setCardModalOpen(true)}
@@ -78,6 +80,9 @@ export default function CreditCardClient({ cards, pageData, categories }: Props)
           >
             <Plus size={15} /> Configurar mi tarjeta
           </button>
+          <p className="text-xs font-light text-muted-foreground max-w-xs">
+            Recuerda que nosotros jamas te pediremos los datos de tu tarjeta, solo necesitamos el nombre, límite y fechas de cierre y vencimiento.
+          </p>
         </div>
 
         {isCardModalOpen && (

@@ -4,6 +4,8 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { createFixedExpense, updateFixedExpense } from "@/lib/actions/fixed-expenses";
 import type { Category } from "@prisma/client";
+import { CurrencyInput } from "@/components/ui/currency-input";
+import { parseCLP } from "@/lib/format";
 
 type FixedExpenseItem = {
   id: string;

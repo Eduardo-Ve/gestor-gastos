@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { getCategoryIcon } from "@/lib/icon-map";
 import { saveBudgetLimits } from "./actions";
+import { CurrencyInput } from "@/components/ui/currency-input";
+import { formatCLP, parseCLP } from "@/lib/format";
 
 type BudgetItem = { id: string; name: string; icon: string; color: string; limit: number; spent: number };
 
@@ -13,9 +15,8 @@ interface BudgetEditorModalProps {
 }
 
 export function BudgetEditorModal({ budgets, onClose, onSaved }: BudgetEditorModalProps) {
-  // 0 = sin presupuesto, igual que en el resto del proyecto
   const [values, setValues] = useState<Record<string, string>>(
-    Object.fromEntries(budgets.map((b) => [b.id, b.limit === 0 ? "" : String(b.limit)]))
+    Object.fromEntries(budgets.map((b) => [b.id, b.limit === 0 ? "" : formatCLP(String(b.limit))]))
   );
   const [saving, setSaving] = useState(false);
 
@@ -23,7 +24,7 @@ export function BudgetEditorModal({ budgets, onClose, onSaved }: BudgetEditorMod
     setSaving(true);
     const limits: Record<string, number> = {};
     for (const [id, raw] of Object.entries(values)) {
-      limits[id] = raw.trim() === "" ? 0 : Number(raw);
+      limits[id] = raw.trim() === "" ? 0 : parseCLP(raw);
     }
     await saveBudgetLimits(limits);
     setSaving(false);
@@ -47,12 +48,11 @@ export function BudgetEditorModal({ budgets, onClose, onSaved }: BudgetEditorMod
               <div key={b.id} className="flex items-center gap-3">
                 <Icon size={16} style={{ color: b.color }} className="shrink-0" />
                 <span className="text-sm flex-1 truncate">{b.name}</span>
-                <input
-                  type="number"
-                  placeholder="Sin límite"
+                <CurrencyInput
                   value={values[b.id]}
-                  onChange={(e) => setValues((prev) => ({ ...prev, [b.id]: e.target.value }))}
-                  className="w-32 bg-background border border-border rounded-md px-3 py-1.5 text-sm text-right placeholder:text-muted-foreground focus:outline-none focus:border-foreground/40"
+                  onChange={(formatted) => setValues((prev) => ({ ...prev, [b.id]: formatted }))}
+                  placeholder="Sin límite"
+                  className="w-32 bg-background border border-border rounded-md pl-6 pr-3 py-1.5 text-sm text-right placeholder:text-muted-foreground focus:outline-none focus:border-foreground/40"
                 />
               </div>
             );
