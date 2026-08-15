@@ -4,6 +4,8 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { createCreditCardPurchase } from "@/lib/actions/credit-card";
 import type { Category } from "@prisma/client";
+import { CurrencyInput } from "@/components/ui/currency-input";
+import { parseCLP } from "@/lib/format";
 
 type Props = {
   cardId: string;
@@ -29,23 +31,28 @@ export function PurchaseFormModal({ cardId, categories, onClose, onCreated }: Pr
     setSubmitting(true);
     setError(null);
 
-    const result = await createCreditCardPurchase({
-      cardId,
-      description,
-      totalAmount: Number(totalAmount),
-      installmentsCount: Number(installmentsCount),
-      monthlyInterestRate: isInstallments ? Number(monthlyInterestRate) / 100 : 0,
-      categoryId,
-      purchaseDate: new Date(purchaseDate),
-    });
+    try {
+      const result = await createCreditCardPurchase({
+        cardId,
+        description,
+        totalAmount: parseCLP(totalAmount),
+        installmentsCount: Number(installmentsCount),
+        monthlyInterestRate: isInstallments ? Number(monthlyInterestRate) / 100 : 0,
+        categoryId,
+        purchaseDate: new Date(purchaseDate),
+      });
 
-    setSubmitting(false);
+      if (!result.success) {
+        setError(result.error ?? "Ocurrió un error al guardar la compra");
+        return;
+      }
 
-    if (!result.success) {
-      setError("Ocurrió un error al guardar la compra");
-      return;
+      onCreated();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "No se pudo conectar con el servidor");
+    } finally {
+      setSubmitting(false);
     }
-    onCreated();
   }
 
   return (
@@ -72,12 +79,10 @@ export function PurchaseFormModal({ cardId, categories, onClose, onCreated }: Pr
 
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">Monto total</label>
-            <input
-              type="number"
+            <CurrencyInput
               value={totalAmount}
-              onChange={(e) => setTotalAmount(e.target.value)}
-              placeholder="400000"
-              className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm"
+              onChange={setTotalAmount}
+              placeholder="300.000"
               required
             />
           </div>
