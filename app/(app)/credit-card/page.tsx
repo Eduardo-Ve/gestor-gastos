@@ -7,19 +7,22 @@ export default async function CreditCardPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
-  const cards = (await getUserCreditCards(session.user.id)).map((card) => ({
+  const userId = session.user.id;
+  const cards = (await getUserCreditCards(userId)).map((card) => ({
     ...card,
     cardLimit: Number(card.cardLimit.toString()),
   }));
 
   if (cards.length === 0) {
-    return <CreditCardClient cards={[]} pageData={null} categories={[]} />;
+    return <CreditCardClient cards={[]} pageDataByCard={{}} categories={[]} />;
   }
 
-  const [pageData, categories] = await Promise.all([
-    getCreditCardPageData(session.user.id, cards[0].id),
-    getExpenseCategories(session.user.id),
+  const [pageDataList, categories] = await Promise.all([
+    Promise.all(cards.map((c) => getCreditCardPageData(userId, c.id))),
+    getExpenseCategories(userId),
   ]);
 
-  return <CreditCardClient cards={cards} pageData={pageData} categories={categories} />;
+  const pageDataByCard = Object.fromEntries(pageDataList.map((pd) => [pd.card.id, pd]));
+
+  return <CreditCardClient cards={cards} pageDataByCard={pageDataByCard} categories={categories} />;
 }

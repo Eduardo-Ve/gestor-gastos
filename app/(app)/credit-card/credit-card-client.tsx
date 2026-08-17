@@ -39,23 +39,20 @@ type PageData = {
 
 type Props = {
   cards: CreditCardListItem[];
-  pageData: PageData | null;
+  pageDataByCard: Record<string, PageData>;
   categories: Category[];
 };
 
-function clp(n: number) {
-  return n.toLocaleString("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 });
-}
-
-export default function CreditCardClient({ cards, pageData, categories }: Props) {
+export default function CreditCardClient({ cards, pageDataByCard, categories }: Props) {
   const router = useRouter();
   const [isCardModalOpen, setCardModalOpen] = useState(false);
   const [isPurchaseModalOpen, setPurchaseModalOpen] = useState(false);
+  const [selectedCardId, setSelectedCardId] = useState(cards[0]?.id ?? null);
 
   function handleCreated() {
     setCardModalOpen(false);
     setPurchaseModalOpen(false);
-    router.refresh();
+    router.refresh(); // esto sí necesita ir al servidor, porque cambió la data real
   }
 
   async function handleTogglePaid(installmentId: string) {
@@ -63,6 +60,16 @@ export default function CreditCardClient({ cards, pageData, categories }: Props)
     router.refresh();
   }
 
+  function handleSelectCard(cardId: string) {
+    setSelectedCardId(cardId); // instantáneo, sin red
+  }
+
+  const pageData = selectedCardId ? pageDataByCard[selectedCardId] : null;
+
+
+function clp(n: number) {
+  return n.toLocaleString("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 });
+}
   if (cards.length === 0 || !pageData) {
     return (
       <div className="min-h-screen w-full bg-background text-foreground px-5 py-6 md:px-8 md:py-8">
@@ -72,7 +79,6 @@ export default function CreditCardClient({ cards, pageData, categories }: Props)
 
           <p className="text-xs text-muted-foreground max-w-xs">
             Configura tu tarjeta de crédito para empezar a trackear tus compras en cuotas.
-            
           </p>
           <button
             onClick={() => setCardModalOpen(true)}
@@ -96,6 +102,29 @@ export default function CreditCardClient({ cards, pageData, categories }: Props)
 
   return (
     <div className="min-h-screen w-full bg-background text-foreground px-5 py-6 md:px-8 md:py-8">
+{cards.length > 0 && (
+  <div className="flex items-center gap-2 mb-5 overflow-x-auto pb-1">
+    {cards.map((c) => (
+      <button
+        key={c.id}
+        onClick={() => handleSelectCard(c.id)}
+        className={`shrink-0 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+          c.id === selectedCardId
+            ? "bg-primary text-primary-foreground"
+            : "bg-card border border-border text-muted-foreground hover:text-foreground"
+        }`}
+      >
+        {c.name}
+      </button>
+    ))}
+    <button
+      onClick={() => setCardModalOpen(true)}
+      className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-md text-sm border border-dashed border-border text-muted-foreground hover:text-foreground"
+    >
+      <Plus size={14} /> Agregar tarjeta
+    </button>
+  </div>
+)}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-lg font-semibold tracking-tight">{card.name}</h1>
@@ -171,6 +200,10 @@ export default function CreditCardClient({ cards, pageData, categories }: Props)
           onClose={() => setPurchaseModalOpen(false)}
           onCreated={handleCreated}
         />
+      )}
+
+      {isCardModalOpen && (
+        <CreditCardFormModal onClose={() => setCardModalOpen(false)} onCreated={handleCreated} />
       )}
     </div>
   );
