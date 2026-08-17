@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { label: "Categorías", href: "/categories" },
   { label: "Presupuestos", href: "/budgets" },
   { label: "Gastos Fijos", href: "/fixed-expenses" },
+  { label: "Tarjeta de Crédito", href: "/credit-card" },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
