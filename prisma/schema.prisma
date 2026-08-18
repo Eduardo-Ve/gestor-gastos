@@ -20,36 +20,38 @@ enum PaymentMethod {
 }
 
 model Category {
-  id            String          @id @default(cuid())
-  name          String
-  color         String
-  icon          String
-  type          TransactionType
-  userId        String
-  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  transactions  Transaction[]
-  budgets       Budget[]
-  createdAt     DateTime        @default(now())
-  fixedExpenses FixedExpense[]
+  id                  String               @id @default(cuid())
+  name                String
+  color               String
+  icon                String
+  type                TransactionType
+  userId              String
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions        Transaction[]
+  budgets             Budget[]
+  createdAt           DateTime             @default(now())
+  fixedExpenses       FixedExpense[]
+  creditCardPurchases CreditCardPurchase[]
 
   @@index([userId])
 }
 
 model Transaction {
-  id                  String               @id @default(cuid())
-  description         String?
-  amount              Int
-  date                DateTime
-  type                TransactionType
-  paymentMethod       PaymentMethod
-  categoryId          String
-  category            Category             @relation(fields: [categoryId], references: [id])
-  fixedExpenseId      String?
-  fixedExpense        FixedExpense?        @relation(fields: [fixedExpenseId], references: [id])
-  userId              String
-  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt           DateTime             @default(now())
-  fixedExpensePayment FixedExpensePayment?
+  id                    String                 @id @default(cuid())
+  description           String?
+  amount                Int
+  date                  DateTime
+  type                  TransactionType
+  paymentMethod         PaymentMethod
+  categoryId            String
+  category              Category               @relation(fields: [categoryId], references: [id])
+  fixedExpenseId        String?
+  fixedExpense          FixedExpense?          @relation(fields: [fixedExpenseId], references: [id])
+  userId                String
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt             DateTime               @default(now())
+  creditCardInstallment CreditCardInstallment?
+  fixedExpensePayment   FixedExpensePayment?
 
   @@index([userId, date])
   @@index([categoryId])
@@ -104,19 +106,21 @@ model VerificationToken {
 }
 
 model User {
-  id            String         @id @default(cuid())
-  email         String         @unique
-  name          String?
-  password      String? // null si entró solo con Google
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  categories    Category[]
-  fixedExpenses FixedExpense[]
-  transactions  Transaction[]
-  budgets       Budget[]
-  createdAt     DateTime       @default(now())
+  id                  String               @id @default(cuid())
+  email               String               @unique
+  name                String?
+  password            String? // null si entró solo con Google
+  emailVerified       DateTime?
+  image               String?
+  accounts            Account[]
+  sessions            Session[]
+  categories          Category[]
+  fixedExpenses       FixedExpense[]
+  transactions        Transaction[]
+  budgets             Budget[]
+  createdAt           DateTime             @default(now())
+  creditCards         CreditCard[]
+  creditCardPurchases CreditCardPurchase[]
 }
 
 model FixedExpense {
@@ -149,4 +153,49 @@ model FixedExpensePayment {
   createdAt DateTime  @default(now())
 
   @@unique([fixedExpenseId, period])
+}
+
+model CreditCard {
+  id         String               @id @default(cuid())
+  name       String // "Falabella Visa", "Santander Latam Pass"
+  cardLimit  Decimal // cupo total
+  closingDay Int // día del mes que cierra el ciclo de facturación
+  dueDay     Int // día del mes que vence el pago
+  userId     String
+  user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purchases  CreditCardPurchase[]
+
+  createdAt DateTime @default(now())
+}
+
+model CreditCardPurchase {
+  id                  String                  @id @default(cuid())
+  description         String 
+  totalAmount         Decimal 
+  installmentsCount   Int //
+  monthlyInterestRate Decimal                 @default(0) // 
+  purchaseDate        DateTime
+  categoryId          String
+  category            Category                @relation(fields: [categoryId], references: [id])
+  cardId              String
+  card                CreditCard              @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  userId              String
+  user                User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  installments        CreditCardInstallment[]
+
+  createdAt DateTime @default(now())
+}
+
+model CreditCardInstallment {
+  id                String             @id @default(cuid())
+  purchaseId        String
+  purchase          CreditCardPurchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  installmentNumber Int 
+  amount            Decimal 
+  billingPeriod     DateTime 
+  paid              Boolean            @default(false)
+  transactionId     String?            @unique
+  transaction       Transaction?       @relation(fields: [transactionId], references: [id])
+
+  @@unique([purchaseId, installmentNumber])
 }

@@ -121,7 +121,7 @@ export default function FixedExpensesClient({ fixedExpenses, categories }: Props
                     </button>
                     <div className="h-8 w-8 rounded-md flex items-center justify-center shrink-0" style={{ backgroundColor: `${f.categoryColor}15` }}>
                       <Icon size={16} style={{ color: f.categoryColor }} />
-                    </div>©
+                    </div>
                     <div>
                       <p className="text-sm font-medium">{f.name}</p>
                       <p className="text-[11px] text-muted-foreground">

@@ -149,3 +149,82 @@ export async function getFixedExpensesPageData(userId: string) {
 
   return { fixedExpenses: items, categories };
 }
+export async function getUserCreditCards(userId: string) {
+  return prisma.creditCard.findMany({
+    where: { userId },
+    orderBy: { createdAt: "asc" },
+  });
+}
+
+export async function getCreditCardPageData(userId: string, cardId: string) {
+  const now = new Date();
+  const currentPeriod = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const card = await prisma.creditCard.findUniqueOrThrow({
+    where: { id: cardId, userId },
+  });
+
+  const installmentsThisPeriod = await prisma.creditCardInstallment.findMany({
+    where: {
+      billingPeriod: currentPeriod,
+      purchase: { cardId, userId },
+    },
+    include: {
+      purchase: {
+        include: { category: true },
+      },
+    },
+    orderBy: { purchase: { purchaseDate: "asc" } },
+  });
+
+  const allActivePurchases = await prisma.creditCardPurchase.findMany({
+    where: { cardId, userId },
+    include: {
+      installments: {
+        where: { paid: false },
+      },
+    },
+  });
+
+  const items = installmentsThisPeriod.map((inst) => ({
+    id: inst.id,
+    purchaseId: inst.purchaseId,
+    description: inst.purchase.description,
+    installmentLabel: `${inst.installmentNumber}/${inst.purchase.installmentsCount}`,
+    amount: Number(inst.amount),
+    paid: inst.paid,
+    categoryName: inst.purchase.category.name,
+    categoryColor: inst.purchase.category.color,
+    categoryIcon: inst.purchase.category.icon,
+  }));
+
+  const totalThisPeriod = items.reduce((sum, i) => sum + i.amount, 0);
+  const paidThisPeriod = items.filter((i) => i.paid).reduce((sum, i) => sum + i.amount, 0);
+  const pendingThisPeriod = totalThisPeriod - paidThisPeriod;
+
+  const totalOwed = allActivePurchases.reduce(
+    (sum, p) => sum + p.installments.reduce((s, i) => s + Number(i.amount), 0),
+    0
+  );
+
+  return {
+    card: {
+      id: card.id,
+      name: card.name,
+      cardLimit: Number(card.cardLimit),
+      closingDay: card.closingDay,
+      dueDay: card.dueDay,
+    },
+    items,
+    totalThisPeriod,
+    paidThisPeriod,
+    pendingThisPeriod,
+    totalOwed,
+  };
+}
+export async function getExpenseCategories(userId: string) {
+  return prisma.category.findMany({
+    where: { userId, type: "expense" },
+    orderBy: { name: "asc" },
+  });
+}
