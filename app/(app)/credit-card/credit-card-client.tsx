@@ -7,7 +7,17 @@ import { CreditCardFormModal } from "./credit-card-form-modal";
 import { PurchaseFormModal } from "./purchase-form-modal";
 import { toggleInstallmentPaid } from "@/lib/actions/credit-card";
 import type { Category } from "@prisma/client";
+import { deleteCreditCardPurchase } from "@/lib/actions/credit-card";
+import { Trash2 } from "lucide-react";
 
+type ActivePurchase = {
+  id: string;
+  description: string;
+  totalAmount: number;
+  installmentsCount: number;
+  installmentsPaid: number;
+  purchaseDate: Date;
+};
 type CreditCardListItem = {
   id: string;
   name: string;
@@ -35,8 +45,8 @@ type PageData = {
   paidThisPeriod: number;
   pendingThisPeriod: number;
   totalOwed: number;
+  activePurchases: ActivePurchase[];
 };
-
 type Props = {
   cards: CreditCardListItem[];
   pageDataByCard: Record<string, PageData>;
@@ -52,11 +62,16 @@ export default function CreditCardClient({ cards, pageDataByCard, categories }: 
   function handleCreated() {
     setCardModalOpen(false);
     setPurchaseModalOpen(false);
-    router.refresh(); // esto sí necesita ir al servidor, porque cambió la data real
+    router.refresh();
   }
 
   async function handleTogglePaid(installmentId: string) {
     await toggleInstallmentPaid(installmentId);
+    router.refresh();
+  }
+
+  async function handleDeletePurchase(purchaseId: string) {
+    await deleteCreditCardPurchase(purchaseId);
     router.refresh();
   }
 
@@ -67,9 +82,9 @@ export default function CreditCardClient({ cards, pageDataByCard, categories }: 
   const pageData = selectedCardId ? pageDataByCard[selectedCardId] : null;
 
 
-function clp(n: number) {
-  return n.toLocaleString("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 });
-}
+  function clp(n: number) {
+    return n.toLocaleString("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 });
+  }
   if (cards.length === 0 || !pageData) {
     return (
       <div className="min-h-screen w-full bg-background text-foreground px-5 py-6 md:px-8 md:py-8">
@@ -98,33 +113,32 @@ function clp(n: number) {
     );
   }
 
-  const { card, items, totalThisPeriod, paidThisPeriod, pendingThisPeriod, totalOwed } = pageData;
-
+  const { card, items, totalThisPeriod, paidThisPeriod, pendingThisPeriod, totalOwed, activePurchases } = pageData;
+  
   return (
     <div className="min-h-screen w-full bg-background text-foreground px-5 py-6 md:px-8 md:py-8">
-{cards.length > 0 && (
-  <div className="flex items-center gap-2 mb-5 overflow-x-auto pb-1">
-    {cards.map((c) => (
-      <button
-        key={c.id}
-        onClick={() => handleSelectCard(c.id)}
-        className={`shrink-0 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-          c.id === selectedCardId
-            ? "bg-primary text-primary-foreground"
-            : "bg-card border border-border text-muted-foreground hover:text-foreground"
-        }`}
-      >
-        {c.name}
-      </button>
-    ))}
-    <button
-      onClick={() => setCardModalOpen(true)}
-      className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-md text-sm border border-dashed border-border text-muted-foreground hover:text-foreground"
-    >
-      <Plus size={14} /> Agregar tarjeta
-    </button>
-  </div>
-)}
+      {cards.length > 0 && (
+        <div className="flex items-center gap-2 mb-5 overflow-x-auto pb-1">
+          {cards.map((c) => (
+            <button
+              key={c.id}
+              onClick={() => handleSelectCard(c.id)}
+              className={`shrink-0 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${c.id === selectedCardId
+                ? "bg-primary text-primary-foreground"
+                : "bg-card border border-border text-muted-foreground hover:text-foreground"
+                }`}
+            >
+              {c.name}
+            </button>
+          ))}
+          <button
+            onClick={() => setCardModalOpen(true)}
+            className="shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-md text-sm border border-dashed border-border text-muted-foreground hover:text-foreground"
+          >
+            <Plus size={14} /> Agregar tarjeta
+          </button>
+        </div>
+      )}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-lg font-semibold tracking-tight">{card.name}</h1>
@@ -179,6 +193,16 @@ function clp(n: number) {
                       <Circle size={18} className="text-muted-foreground" />
                     )}
                   </button>
+                  <div className="flex items-center gap-3">
+                    <p className="text-sm font-semibold">{clp(item.amount)}</p>
+                    <button
+                      onClick={() => handleDeletePurchase(item.purchaseId)}
+                      className="text-muted-foreground hover:text-rose-500"
+                      title="Eliminar compra"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
                   <div>
                     <p className="text-sm font-medium">{item.description}</p>
                     <p className="text-[11px] text-muted-foreground">
@@ -188,11 +212,43 @@ function clp(n: number) {
                 </div>
                 <p className="text-sm font-semibold">{clp(item.amount)}</p>
               </div>
+
+            ))}
+          </div>
+
+        )}
+      </div>
+
+      {/* después de la card de "Cuotas de este período" */}
+      <div className="bg-card border border-border rounded-lg mt-4">
+        <div className="px-4 py-3 border-b border-border">
+          <p className="text-sm font-medium">Compras activas</p>
+        </div>
+        {activePurchases.length === 0 ? (
+          <div className="px-4 py-10 text-center text-sm text-muted-foreground">
+            No tienes compras activas en esta tarjeta.
+          </div>
+        ) : (
+          <div className="divide-y divide-border">
+            {activePurchases.map((p) => (
+              <div key={p.id} className="flex items-center justify-between px-4 py-3">
+                <div>
+                  <p className="text-sm font-medium">{p.description}</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {p.installmentsPaid}/{p.installmentsCount} cuotas pagadas
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <p className="text-sm font-semibold">{clp(p.totalAmount)}</p>
+                  <button onClick={() => handleDeletePurchase(p.id)} title="Eliminar compra">
+                    <Trash2 size={14} className="text-muted-foreground hover:text-rose-500" />
+                  </button>
+                </div>
+              </div>
             ))}
           </div>
         )}
       </div>
-
       {isPurchaseModalOpen && (
         <PurchaseFormModal
           cardId={card.id}

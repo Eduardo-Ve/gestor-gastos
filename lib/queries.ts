@@ -160,6 +160,7 @@ export async function getCreditCardPageData(userId: string, cardId: string) {
   const now = new Date();
   const currentPeriod = new Date(now.getFullYear(), now.getMonth(), 1);
 
+
   const card = await prisma.creditCard.findUniqueOrThrow({
     where: { id: cardId, userId },
   });
@@ -206,6 +207,14 @@ export async function getCreditCardPageData(userId: string, cardId: string) {
     (sum, p) => sum + p.installments.reduce((s, i) => s + Number(i.amount), 0),
     0
   );
+  const activePurchases = allActivePurchases.map((p) => ({
+    id: p.id,
+    description: p.description,
+    totalAmount: Number(p.totalAmount),
+    installmentsCount: p.installmentsCount,
+    installmentsPaid: p.installmentsCount - p.installments.length, // installments filtrado por paid:false
+    purchaseDate: p.purchaseDate,
+  }));
 
   return {
     card: {
@@ -220,6 +229,7 @@ export async function getCreditCardPageData(userId: string, cardId: string) {
     paidThisPeriod,
     pendingThisPeriod,
     totalOwed,
+    activePurchases,
   };
 }
 export async function getExpenseCategories(userId: string) {

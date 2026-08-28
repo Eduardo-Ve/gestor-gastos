@@ -6,7 +6,6 @@ import { calculateInstallmentAmount, getBillingPeriodForDate } from "@/lib/credi
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-
 export async function createCreditCardPurchase(input: {
   cardId: string;
   description: string;
@@ -76,15 +75,22 @@ export async function createCreditCardPurchase(input: {
         },
       });
 
+      // 5. Generar las cuotas, respetando el día de cierre de la tarjeta
+      const firstBillingPeriod = getBillingPeriodForDate(input.purchaseDate, card.closingDay);
+
       const installmentsData = Array.from({ length: input.installmentsCount }, (_, i) => {
-        const billingPeriod = new Date(input.purchaseDate);
-        billingPeriod.setMonth(billingPeriod.getMonth() + i + 1);
-        billingPeriod.setDate(1);
+        const billingPeriod = new Date(firstBillingPeriod);
+        billingPeriod.setMonth(billingPeriod.getMonth() + i);
+
+        let amount = installmentAmount;
+        if (i === 0 && input.monthlyInterestRate === 0) {
+          amount = input.totalAmount - installmentAmount * (input.installmentsCount - 1);
+        }
 
         return {
           purchaseId: purchase.id,
           installmentNumber: i + 1,
-          amount: installmentAmount,
+          amount,
           billingPeriod,
         };
       });
@@ -118,7 +124,7 @@ export async function createCreditCard(input: unknown) {
     return { success: false, error: parsed.error.issues[0].message };
   }
 
-  await prisma.creditCard.create({
+  const card = await prisma.creditCard.create({
     data: {
       name: parsed.data.name,
       cardLimit: parsed.data.cardLimit,
@@ -129,7 +135,7 @@ export async function createCreditCard(input: unknown) {
   });
 
   revalidatePath("/credit-card");
-  return { success: true };
+  return { success: true, cardId: card.id };
 }
 
 export async function toggleInstallmentPaid(installmentId: string) {
@@ -173,6 +179,39 @@ export async function toggleInstallmentPaid(installmentId: string) {
       });
     });
   }
+
+  revalidatePath("/credit-card");
+  revalidatePath("/");
+  return { success: true };
+}
+export async function deleteCreditCardPurchase(purchaseId: string) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("No autorizado");
+
+  const userId = session.user.id;
+
+  const purchase = await prisma.creditCardPurchase.findFirst({
+    where: { id: purchaseId, userId },
+    include: { installments: true },
+  });
+
+  if (!purchase) {
+    return { success: false, error: "Compra no encontrada" };
+  }
+
+  const paidTransactionIds = purchase.installments
+    .filter((i) => i.transactionId)
+    .map((i) => i.transactionId as string);
+
+  await prisma.$transaction(async (tx) => {
+    if (paidTransactionIds.length > 0) {
+      await tx.transaction.deleteMany({
+        where: { id: { in: paidTransactionIds } },
+      });
+    }
+    // Esto borra la compra Y sus installments en cascada (onDelete: Cascade en el schema)
+    await tx.creditCardPurchase.delete({ where: { id: purchaseId } });
+  });
 
   revalidatePath("/credit-card");
   revalidatePath("/");

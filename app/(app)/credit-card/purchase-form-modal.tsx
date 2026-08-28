@@ -149,6 +149,7 @@ export function PurchaseFormModal({ cardId, categories, onClose, onCreated }: Pr
             className="bg-primary text-primary-foreground text-sm font-medium px-3 py-2 rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {isSubmitting ? "Guardando..." : "Guardar"}
+            
           </button>
         </form>
       </div>

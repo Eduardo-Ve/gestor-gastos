@@ -4,10 +4,10 @@ export function calculateInstallmentAmount(
   installments: number
 ): number {
   if (monthlyRate === 0) {
-    return principal / installments;
+    return Math.round(principal / installments);
   }
   const factor = monthlyRate / (1 - Math.pow(1 + monthlyRate, -installments));
-  return principal * factor;
+  return Math.round(principal * factor);
 }
 
 export function getBillingPeriodForDate(purchaseDate: Date, closingDay: number): Date {
