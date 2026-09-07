@@ -37,6 +37,7 @@ export async function getBudgetsWithSpent(userId: string) {
 
   return budgets.map((b) => ({
     ...b,
+    limit: b.limit ?? 0,
     spent: spentByCategory.find((s) => s.categoryId === b.categoryId)?._sum.amount ?? 0,
   }));
 }
@@ -148,4 +149,89 @@ export async function getFixedExpensesPageData(userId: string) {
   }));
 
   return { fixedExpenses: items, categories };
+}
+export async function getUserCreditCards(userId: string) {
+  return prisma.creditCard.findMany({
+    where: { userId },
+    orderBy: { createdAt: "asc" },
+  });
+}
+
+export async function getCreditCardPageData(userId: string, cardId: string) {
+  const now = new Date();
+  const currentPeriod = new Date(now.getFullYear(), now.getMonth(), 1);
+
+
+  const [card, installmentsThisPeriod, allActivePurchases] = await Promise.all([
+    prisma.creditCard.findUniqueOrThrow({
+      where: { id: cardId, userId },
+    }),
+    prisma.creditCardInstallment.findMany({
+      where: {
+        billingPeriod: currentPeriod,
+        purchase: { cardId, userId },
+      },
+      include: {
+        purchase: { include: { category: true } },
+      },
+      orderBy: { purchase: { purchaseDate: "asc" } },
+    }),
+    prisma.creditCardPurchase.findMany({
+      where: { cardId, userId },
+      include: {
+        installments: { where: { paid: false } },
+      },
+    }),
+  ]);
+
+  const items = installmentsThisPeriod.map((inst) => ({
+    id: inst.id,
+    purchaseId: inst.purchaseId,
+    description: inst.purchase.description,
+    installmentLabel: `${inst.installmentNumber}/${inst.purchase.installmentsCount}`,
+    amount: Number(inst.amount),
+    paid: inst.paid,
+    categoryName: inst.purchase.category.name,
+    categoryColor: inst.purchase.category.color,
+    categoryIcon: inst.purchase.category.icon,
+  }));
+
+  const totalThisPeriod = items.reduce((sum, i) => sum + i.amount, 0);
+  const paidThisPeriod = items.filter((i) => i.paid).reduce((sum, i) => sum + i.amount, 0);
+  const pendingThisPeriod = totalThisPeriod - paidThisPeriod;
+
+  const totalOwed = allActivePurchases.reduce(
+    (sum, p) => sum + p.installments.reduce((s, i) => s + Number(i.amount), 0),
+    0
+  );
+  const activePurchases = allActivePurchases.map((p) => ({
+    id: p.id,
+    description: p.description,
+    totalAmount: Number(p.totalAmount),
+    installmentsCount: p.installmentsCount,
+    installmentsPaid: p.installmentsCount - p.installments.length, // installments filtrado por paid:false
+    purchaseDate: p.purchaseDate,
+  }));
+
+  return {
+    card: {
+      id: card.id,
+      name: card.name,
+      cardLimit: Number(card.cardLimit),
+      closingDay: card.closingDay,
+      dueDay: card.dueDay,
+    },
+    items,
+    totalThisPeriod,
+    paidThisPeriod,
+    pendingThisPeriod,
+    totalOwed,
+    activePurchases,
+  };
+}
+export async function getExpenseCategories(userId: string) {
+  return prisma.category.findMany({
+    where: { userId, type: "expense" },
+    orderBy: { name: "asc" },
+  });
 }

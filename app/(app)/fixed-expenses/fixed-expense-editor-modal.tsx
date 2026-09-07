@@ -4,6 +4,8 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { createFixedExpense, updateFixedExpense } from "@/lib/actions/fixed-expenses";
 import type { Category } from "@prisma/client";
+import { CurrencyInput } from "@/components/ui/currency-input";
+import { parseCLP } from "@/lib/format";
 
 type FixedExpenseItem = {
   id: string;
@@ -27,6 +29,8 @@ export function FixedExpenseEditorModal({ categories, editingItem, onClose, onSa
   const [categoryId, setCategoryId] = useState(editingItem?.categoryId ?? categories[0]?.id ?? "");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setSubmitting] = useState(false);
+  const [installmentsCount, setInstallmentsCount] = useState("1");
+const isInstallments = Number(installmentsCount) > 1;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -92,6 +96,7 @@ export function FixedExpenseEditorModal({ categories, editingItem, onClose, onSa
               className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm"
               required
             />
+            
           </div>
 
           <div>
@@ -120,5 +125,6 @@ export function FixedExpenseEditorModal({ categories, editingItem, onClose, onSa
         </form>
       </div>
     </div>
+    
   );
 }
