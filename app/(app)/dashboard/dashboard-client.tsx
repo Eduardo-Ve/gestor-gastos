@@ -110,7 +110,11 @@ export default function DashboardClient({ summary, budgets, monthly, recent, use
             ) : (
               <div className="flex flex-col gap-3">
                 {budgets.map((b) => {
-                  const pct = Math.min(100, Math.round((b.spent / b.limit) * 100));
+                  const limit = Number(b.limit);
+                  const spent = Number(b.spent);
+                  const pct = Number.isFinite(limit) && limit > 0 && Number.isFinite(spent)
+                    ? Math.min(100, Math.max(0, Math.round((spent / limit) * 100)))
+                    : 0;
                   const Icon = getCategoryIcon(b.category.icon);
                   return (
                     <div key={b.id}>
