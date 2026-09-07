@@ -37,6 +37,7 @@ export async function getBudgetsWithSpent(userId: string) {
 
   return budgets.map((b) => ({
     ...b,
+    limit: b.limit ?? 0,
     spent: spentByCategory.find((s) => s.categoryId === b.categoryId)?._sum.amount ?? 0,
   }));
 }
@@ -161,31 +162,27 @@ export async function getCreditCardPageData(userId: string, cardId: string) {
   const currentPeriod = new Date(now.getFullYear(), now.getMonth(), 1);
 
 
-  const card = await prisma.creditCard.findUniqueOrThrow({
-    where: { id: cardId, userId },
-  });
-
-  const installmentsThisPeriod = await prisma.creditCardInstallment.findMany({
-    where: {
-      billingPeriod: currentPeriod,
-      purchase: { cardId, userId },
-    },
-    include: {
-      purchase: {
-        include: { category: true },
+  const [card, installmentsThisPeriod, allActivePurchases] = await Promise.all([
+    prisma.creditCard.findUniqueOrThrow({
+      where: { id: cardId, userId },
+    }),
+    prisma.creditCardInstallment.findMany({
+      where: {
+        billingPeriod: currentPeriod,
+        purchase: { cardId, userId },
       },
-    },
-    orderBy: { purchase: { purchaseDate: "asc" } },
-  });
-
-  const allActivePurchases = await prisma.creditCardPurchase.findMany({
-    where: { cardId, userId },
-    include: {
-      installments: {
-        where: { paid: false },
+      include: {
+        purchase: { include: { category: true } },
       },
-    },
-  });
+      orderBy: { purchase: { purchaseDate: "asc" } },
+    }),
+    prisma.creditCardPurchase.findMany({
+      where: { cardId, userId },
+      include: {
+        installments: { where: { paid: false } },
+      },
+    }),
+  ]);
 
   const items = installmentsThisPeriod.map((inst) => ({
     id: inst.id,
