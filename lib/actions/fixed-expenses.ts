@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -18,6 +18,19 @@ export async function createFixedExpense(input: unknown) {
   const parsed = FixedExpenseSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: parsed.error.issues[0].message };
+  }
+
+  const category = await prisma.category.findFirst({
+    where: {
+      id: parsed.data.categoryId,
+      userId: session.user.id,
+      type: "expense",
+    },
+    select: { id: true },
+  });
+
+  if (!category) {
+    return { success: false, error: "Categoría no válida para un gasto fijo" };
   }
 
   await prisma.fixedExpense.create({
@@ -41,6 +54,19 @@ export async function updateFixedExpense(id: string, input: unknown) {
   const parsed = FixedExpenseSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: parsed.error.issues[0].message };
+  }
+
+  const category = await prisma.category.findFirst({
+    where: {
+      id: parsed.data.categoryId,
+      userId: session.user.id,
+      type: "expense",
+    },
+    select: { id: true },
+  });
+
+  if (!category) {
+    return { success: false, error: "Categoría no válida para un gasto fijo" };
   }
 
   await prisma.fixedExpense.update({

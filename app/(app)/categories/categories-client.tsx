@@ -137,16 +137,18 @@ function CategorySection({
                   {spent > 0 ? `${clp(spent)} este mes` : "Sin movimientos"}
                 </p>
 
-                <div className="absolute top-3 right-3 hidden group-hover:flex gap-1">
+                <div className="absolute top-3 right-3 flex gap-1 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100">
                   <button
                     onClick={() => onEdit(c)}
                     className="h-6 w-6 rounded-md bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground"
+                    aria-label={`Editar ${c.name}`}
                   >
                     <Pencil size={12} />
                   </button>
                   <button
                     onClick={() => onDelete(c.id)}
                     className="h-6 w-6 rounded-md bg-muted flex items-center justify-center text-muted-foreground hover:text-rose-500"
+                    aria-label={`Eliminar ${c.name}`}
                   >
                     <Trash2 size={12} />
                   </button>

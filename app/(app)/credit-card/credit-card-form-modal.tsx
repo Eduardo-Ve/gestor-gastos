@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { createCreditCard } from "@/lib/actions/credit-card";
+import { CurrencyInput } from "@/components/ui/currency-input";
+import { parseCLP } from "@/lib/format";
 
 type Props = {
   onClose: () => void;
@@ -22,7 +24,12 @@ export function CreditCardFormModal({ onClose, onCreated }: Props) {
     setSubmitting(true);
     setError(null);
 
-    const result = await createCreditCard({ name, cardLimit, closingDay, dueDay });
+    const result = await createCreditCard({
+      name,
+      cardLimit: parseCLP(cardLimit),
+      closingDay: Number(closingDay),
+      dueDay: Number(dueDay),
+    });
 
     setSubmitting(false);
 
@@ -57,12 +64,10 @@ export function CreditCardFormModal({ onClose, onCreated }: Props) {
 
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">Cupo total</label>
-            <input
-              type="number"
+            <CurrencyInput
               value={cardLimit}
-              onChange={(e) => setCardLimit(e.target.value)}
-              placeholder="1500000"
-              className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm"
+              onChange={setCardLimit}
+              placeholder="1.500.000"
               required
             />
           </div>

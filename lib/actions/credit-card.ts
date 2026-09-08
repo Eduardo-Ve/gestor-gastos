@@ -41,6 +41,19 @@ export async function createCreditCardPurchase(input: {
         throw new Error("Tarjeta no encontrada");
       }
 
+      const category = await tx.category.findFirst({
+        where: {
+          id: input.categoryId,
+          userId,
+          type: "expense",
+        },
+        select: { id: true },
+      });
+
+      if (!category) {
+        throw new Error("Categoría no válida para esta compra");
+      }
+
       // 2. Calcular cupo usado: suma de cuotas NO pagadas de todas
       // las compras activas de esta tarjeta (eso es lo que compromete cupo)
       const pending = await tx.creditCardInstallment.aggregate({
