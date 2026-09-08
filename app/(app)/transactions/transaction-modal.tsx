@@ -144,15 +144,16 @@ export function TransactionModal({ categories, onClose, onCreated }: Transaction
               className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
             >
               <option value="debit">Débito</option>
-              
               <option value="cash">Efectivo</option>
+              <option value="credit">Crédito</option>
               <option value="transfer">Transferencia</option>
+              <option value="other">Otro</option>
             </select>
           </div>
 {type === "expense" && (
   <p className="text-xs text-muted-foreground -mt-1">
     ¿Pagaste con tarjeta de crédito?{" "}
-    <Link href="/credit-card/new-purchase" className="text-foreground underline hover:opacity-80">
+    <Link href="/credit-card" className="text-foreground underline hover:opacity-80">
       Regístralo acá
     </Link>{" "}
     para trackear las cuotas.

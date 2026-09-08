@@ -43,7 +43,7 @@ export async function createFixedExpense(input: unknown) {
     },
   });
 
-  revalidatePath("/budgets/fixed-expenses");
+  revalidatePath("/fixed-expenses");
   return { success: true };
 }
 
@@ -79,7 +79,7 @@ export async function updateFixedExpense(id: string, input: unknown) {
     },
   });
 
-  revalidatePath("/budgets/fixed-expenses");
+  revalidatePath("/fixed-expenses");
   return { success: true };
 }
 export async function toggleFixedExpenseActive(id: string, isActive: boolean) {
@@ -91,7 +91,7 @@ export async function toggleFixedExpenseActive(id: string, isActive: boolean) {
     data: { active: isActive },
   });
 
-  revalidatePath("/budgets/fixed-expenses");
+  revalidatePath("/fixed-expenses");
   return { success: true };
 }
 
@@ -103,7 +103,7 @@ export async function deleteFixedExpense(id: string) {
     where: { id, userId: session.user.id },
   });
 
-  revalidatePath("/budgets/fixed-expenses");
+  revalidatePath("/fixed-expenses");
   return { success: true };
 }
 export async function toggleFixedExpensePaid(fixedExpenseId: string) {
@@ -143,7 +143,7 @@ export async function toggleFixedExpensePaid(fixedExpenseId: string) {
     });
   }
 
-  revalidatePath("/budgets/fixed-expenses");
+  revalidatePath("/fixed-expenses");
   revalidatePath("/");
   return { success: true };
 }
