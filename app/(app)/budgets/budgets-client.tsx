@@ -55,12 +55,14 @@ export default function BudgetsClient({ budgets, recentTxs }: Props) {
     return { totalLimit, totalSpent, remaining, overallPct, alerts };
   }, [budgets]);
 
+  const budgetedCategories = useMemo(() => budgets.filter((b) => b.limit > 0), [budgets]);
+
   const chartData = useMemo(
-    () => budgets.filter((b) => b.limit > 0).map((b) => ({ name: b.name, value: b.limit, color: b.color })),
-    [budgets]
+    () => budgetedCategories.map((b) => ({ name: b.name, value: b.limit, color: b.color })),
+    [budgetedCategories]
   );
 
-  const selectedBudget = budgets.find((b) => b.id === selectedCategory);
+  const selectedBudget = budgetedCategories.find((b) => b.id === selectedCategory);
   const categoryTransactions = useMemo(() => {
     if (!selectedCategory) return [];
     return recentTxs.filter((t) => t.categoryId === selectedCategory);
@@ -170,12 +172,12 @@ export default function BudgetsClient({ budgets, recentTxs }: Props) {
 
         <div className="lg:col-span-3 bg-card border border-border rounded-lg p-4">
           <p className="text-sm font-medium mb-4">Presupuestos por categoría</p>
-          {budgets.length === 0 ? (
-            <p className="text-xs text-muted-foreground">Crea categorías de gasto primero.</p>
+          {budgetedCategories.length === 0 ? (
+            <p className="text-xs text-muted-foreground">No tienes categorías con presupuesto asignado.</p>
           ) : (
             <div className="flex flex-col gap-4">
-              {budgets.map((b) => {
-                const pct = b.limit > 0 ? Math.min(100, Math.round((b.spent / b.limit) * 100)) : 0;
+              {budgetedCategories.map((b) => {
+                const pct = Math.min(100, Math.round((b.spent / b.limit) * 100));
                 const status = getStatus(b.spent, b.limit);
                 const config = getStatusConfig(status);
                 const Icon = getCategoryIcon(b.icon);
@@ -195,21 +197,19 @@ export default function BudgetsClient({ budgets, recentTxs }: Props) {
                         <div>
                           <p className="text-sm font-medium">{b.name}</p>
                           <p className="text-[11px] text-muted-foreground">
-                            {b.limit > 0 ? `${clp(b.spent)} de ${clp(b.limit)}` : `${clp(b.spent)} gastado, sin límite`}
+                            {clp(b.spent)} de {clp(b.limit)}
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        {b.limit > 0 && <span className={`text-xs font-semibold ${config.text}`}>{pct}%</span>}
+                        <span className={`text-xs font-semibold ${config.text}`}>{pct}%</span>
                         <ChevronRight size={14} className={`text-muted-foreground transition-transform ${isSelected ? "rotate-90" : ""}`} />
                       </div>
                     </div>
-                    {b.limit > 0 && (
-                      <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                        <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: b.color, opacity: status === "exceeded" ? 1 : 0.9 }} />
-                      </div>
-                    )}
-                    {status !== "ok" && status !== "unset" && (
+                    <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                      <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: b.color, opacity: status === "exceeded" ? 1 : 0.9 }} />
+                    </div>
+                    {status !== "ok" && (
                       <p className={`text-[11px] mt-1.5 ${config.text}`}>
                         {status === "exceeded" ? `Excedido en ${clp(b.spent - b.limit)}` : `Te quedan ${clp(b.limit - b.spent)} antes de excederte`}
                       </p>

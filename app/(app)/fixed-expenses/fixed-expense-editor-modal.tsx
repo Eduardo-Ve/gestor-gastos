@@ -5,7 +5,7 @@ import { X } from "lucide-react";
 import { createFixedExpense, updateFixedExpense } from "@/lib/actions/fixed-expenses";
 import type { Category } from "@prisma/client";
 import { CurrencyInput } from "@/components/ui/currency-input";
-import { parseCLP } from "@/lib/format";
+import { formatCLP, parseCLP } from "@/lib/format";
 
 type FixedExpenseItem = {
   id: string;
@@ -24,20 +24,25 @@ type Props = {
 
 export function FixedExpenseEditorModal({ categories, editingItem, onClose, onSaved }: Props) {
   const [name, setName] = useState(editingItem?.name ?? "");
-  const [amount, setAmount] = useState(editingItem?.estimatedAmount?.toString() ?? "");
+  const [amount, setAmount] = useState(
+    editingItem ? formatCLP(String(editingItem.estimatedAmount)) : ""
+  );
   const [dayOfMonth, setDayOfMonth] = useState(editingItem?.dayOfMonth?.toString() ?? "1");
   const [categoryId, setCategoryId] = useState(editingItem?.categoryId ?? categories[0]?.id ?? "");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setSubmitting] = useState(false);
-  const [installmentsCount, setInstallmentsCount] = useState("1");
-const isInstallments = Number(installmentsCount) > 1;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
     setError(null);
 
-    const input = { name, estimatedAmount: amount, dayOfMonth, categoryId };
+    const input = {
+      name,
+      estimatedAmount: parseCLP(amount),
+      dayOfMonth,
+      categoryId,
+    };
     const result = editingItem
       ? await updateFixedExpense(editingItem.id, input)
       : await createFixedExpense(input);
@@ -75,12 +80,10 @@ const isInstallments = Number(installmentsCount) > 1;
 
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">Monto estimado</label>
-            <input
-              type="number"
+            <CurrencyInput
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="9990"
-              className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm"
+              onChange={setAmount}
+              placeholder="9.990"
               required
             />
           </div>

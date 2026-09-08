@@ -8,9 +8,10 @@ type Props = {
   placeholder?: string;
   required?: boolean;
   className?: string;
+  name?: string;
 };
 
-export function CurrencyInput({ value, onChange, placeholder, required, className }: Props) {
+export function CurrencyInput({ value, onChange, placeholder, required, className, name }: Props) {
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     onChange(formatCLP(e.target.value));
   }
@@ -22,6 +23,7 @@ export function CurrencyInput({ value, onChange, placeholder, required, classNam
       </span>
       <input
         type="text"
+        name={name}
         inputMode="numeric"
         value={value}
         onChange={handleChange}

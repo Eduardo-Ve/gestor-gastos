@@ -4,7 +4,9 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { createTransaction } from "./actions";
 import Link from "next/link";
-import type { Category, Transaction } from "@/lib/types";
+import type { Category } from "@/lib/types";
+import { CurrencyInput } from "@/components/ui/currency-input";
+import { parseCLP } from "@/lib/format";
 
 type TransactionModalProps = {
   categories: Category[];
@@ -14,6 +16,7 @@ type TransactionModalProps = {
 
 export function TransactionModal({ categories, onClose, onCreated }: TransactionModalProps) {
   const [type, setType] = useState<"income" | "expense">("expense");
+  const [amount, setAmount] = useState("");
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [isSubmitting, setSubmitting] = useState(false);
 
@@ -25,8 +28,13 @@ export function TransactionModal({ categories, onClose, onCreated }: Transaction
     setErrors({});
 
     const formData = Object.fromEntries(new FormData(e.currentTarget));
+    const normalizedAmount = parseCLP(String(formData.amount ?? ""));
 
-    const result = await createTransaction({ ...formData, type });
+    const result = await createTransaction({
+      ...formData,
+      amount: normalizedAmount,
+      type,
+    });
 
     setSubmitting(false);
 
@@ -76,14 +84,12 @@ export function TransactionModal({ categories, onClose, onCreated }: Transaction
           {/* Monto */}
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">Monto</label>
-            <input
+            <CurrencyInput
               name="amount"
-              type="number"
-              min="1"
-              step="1"
-              required
+              value={amount}
+              onChange={setAmount}
               placeholder="0"
-              className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
+              required
             />
             {errors.amount && <p className="text-xs text-rose-500 mt-1">{errors.amount[0]}</p>}
           </div>

@@ -31,7 +31,13 @@ export async function editCategory(id: string, formData: Record<string, unknown>
   const session = await auth();
   if (!session?.user?.id) return { error: { general: ["No autorizado"] } };
 
-  // updateMany en vez de update: filtra por userId, así nadie edita categorías ajenas aunque adivine el id
+  const existing = await prisma.category.findFirst({
+    where: { id, userId: session.user.id },
+    select: { id: true },
+  });
+
+  if (!existing) return { error: { general: ["Categoría no encontrada"] } };
+
   const result = await prisma.category.updateMany({
     where: { id, userId: session.user.id },
     data: parsed.data,
@@ -39,7 +45,7 @@ export async function editCategory(id: string, formData: Record<string, unknown>
 
   if (result.count === 0) return { error: { general: ["Categoría no encontrada"] } };
 
-  const updated = await prisma.category.findUnique({ where: { id } });
+  const updated = await prisma.category.findFirst({ where: { id, userId: session.user.id } });
 
   revalidatePath("/categories");
   revalidatePath("/transactions");
@@ -53,7 +59,7 @@ export async function removeCategory(id: string) {
   const session = await auth();
   if (!session?.user?.id) return { error: { general: ["No autorizado"] } };
 
-  const inUse = await prisma.transaction.count({ where: { categoryId: id } });
+  const inUse = await prisma.transaction.count({ where: { categoryId: id, userId: session.user.id } });
   if (inUse > 0) {
     return { error: { general: ["No puedes eliminar una categoría con movimientos asociados"] } };
   }

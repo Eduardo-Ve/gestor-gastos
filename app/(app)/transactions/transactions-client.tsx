@@ -94,7 +94,40 @@ export default function TransactionsClient({ transactions, categories }: Props) 
       </div>
 
       <div className="bg-card border border-border rounded-lg overflow-hidden">
-        <table className="w-full text-sm">
+        <div className="md:hidden divide-y divide-border">
+          {filtered.length === 0 ? (
+            <div className="px-4 py-10 text-center text-sm text-muted-foreground">
+              No hay movimientos que calcen con estos filtros.
+            </div>
+          ) : (
+            filtered.map((t) => {
+              const Icon = getCategoryIcon(t.category?.icon) ?? Circle;
+              return (
+                <div key={t.id} className="px-4 py-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium truncate">{t.description || "—"}</p>
+                      <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <Icon size={12} style={{ color: t.category?.color }} />
+                        <span className="truncate">{t.category?.name ?? "Sin categoría"}</span>
+                      </div>
+                    </div>
+                    <p className={`text-sm font-semibold whitespace-nowrap ${t.type === "income" ? "text-emerald-500" : "text-foreground"}`}>
+                      {t.type === "income" ? "+" : "-"}{clp(t.amount)}
+                    </p>
+                  </div>
+
+                  <div className="mt-2 flex items-center justify-between gap-3 text-xs text-muted-foreground">
+                    <span className="capitalize">{t.paymentMethod}</span>
+                    <span>{formatDate(t.date)}</span>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        <table className="hidden md:table w-full text-sm">
           <thead>
             <tr className="border-b border-border text-left text-xs text-muted-foreground">
               <th className="px-4 py-3 font-medium">Descripción</th>
