@@ -59,8 +59,14 @@ export async function removeCategory(id: string) {
   const session = await auth();
   if (!session?.user?.id) return { error: { general: ["No autorizado"] } };
 
-  const inUse = await prisma.transaction.count({ where: { categoryId: id, userId: session.user.id } });
-  if (inUse > 0) {
+  const [transactionCount, budgetCount, fixedExpenseCount, creditCardPurchaseCount] = await Promise.all([
+    prisma.transaction.count({ where: { categoryId: id, userId: session.user.id } }),
+    prisma.budget.count({ where: { categoryId: id, userId: session.user.id } }),
+    prisma.fixedExpense.count({ where: { categoryId: id, userId: session.user.id } }),
+    prisma.creditCardPurchase.count({ where: { categoryId: id, userId: session.user.id } }),
+  ]);
+
+  if (transactionCount + budgetCount + fixedExpenseCount + creditCardPurchaseCount > 0) {
     return { error: { general: ["No puedes eliminar una categoría con movimientos asociados"] } };
   }
 

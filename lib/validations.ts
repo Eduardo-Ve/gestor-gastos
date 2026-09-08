@@ -7,7 +7,7 @@ export const transactionSchema = z.object({
   categoryId: z.string().min(1, "Selecciona una categoría"),
   date: z.coerce.date(),
   description: z.string().trim().max(200).optional(),
-  paymentMethod: z.enum(["cash", "debit", "credit", "transfer"]),
+  paymentMethod: z.enum(["cash", "debit", "credit", "transfer", "other"]),
 });
 
 export type TransactionInput = z.infer<typeof transactionSchema>;
