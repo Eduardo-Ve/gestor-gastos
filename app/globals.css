@@ -150,4 +150,13 @@ input[type="number"]::-webkit-inner-spin-button {
   .btn-icon {
     @apply text-muted-foreground transition-colors hover:text-foreground;
   }
+}@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+html {
+  scroll-behavior: smooth;
+}
+section[id] {
+  scroll-margin-top: 5rem; /* ajusta según la altura real de tu header */
 }
