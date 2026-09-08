@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
-import { createCreditCardPurchase } from "@/lib/actions/credit-card";
+import { createCreditCardPurchase } from "./actions";
 import type { Category } from "@prisma/client";
 import { CurrencyInput } from "@/components/ui/currency-input";
 import { parseCLP } from "@/lib/format";

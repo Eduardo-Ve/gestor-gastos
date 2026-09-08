@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, CheckCircle2, Circle, Trash2, Pencil } from "lucide-react";
 import { getCategoryIcon } from "@/lib/icon-map";
-import { toggleFixedExpenseActive, deleteFixedExpense, toggleFixedExpensePaid } from "@/lib/actions/fixed-expenses";
+import { toggleFixedExpenseActive, deleteFixedExpense, toggleFixedExpensePaid } from "./actions";
 
 import { FixedExpenseEditorModal } from "./fixed-expense-editor-modal";
 import type { Category } from "@prisma/client";

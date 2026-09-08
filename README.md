@@ -35,16 +35,19 @@ app/
   (app)/
     dashboard/        Vista principal con resumen y gráficos
     budgets/           Gestión de presupuestos por categoría
-      fixed-expenses/  Gastos fijos y suscripciones recurrentes
     categories/        CRUD de categorías
     transactions/      Registro y listado de movimientos
+    fixed-expenses/    Gastos fijos y suscripciones recurrentes
+    credit-card/       Tarjetas de crédito y compras en cuotas
     settings/          Perfil de usuario y configuración de cuenta
   api/auth/[...nextauth]/  Endpoints de Auth.js
   login/
   register/
+components/
+  landing/             Componentes de la landing pública
+  ui/                  Componentes UI reutilizables
 lib/
-  actions/             Server Actions (mutaciones)
-  prisma.ts            Instancia singleton de Prisma Client
+  db.ts                Instancia singleton de Prisma Client
   auth.ts              Configuración de Auth.js
   queries.ts           Queries de lectura para Server Components
 prisma/

@@ -3,8 +3,8 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Wallet, Receipt, PiggyBank, Repeat, CreditCard, ShieldCheck, Lock, KeyRound } from "lucide-react";
-import { MobileNav } from "@/components/ui/landing/mobile-nav";
-import { DashboardMockup, CreditCardMockup } from "@/components/ui/landing/mockups";
+import { MobileNav } from "@/components/landing/mobile-nav";
+import { DashboardMockup, CreditCardMockup } from "@/components/landing/mockups";
 
 // TODO: reemplazar por el dominio real cuando esté disponible
 const SITE_URL = "https://finanzas-app.example.com";
