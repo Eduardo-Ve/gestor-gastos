@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
-import { createFixedExpense, updateFixedExpense } from "@/lib/actions/fixed-expenses";
+import { createFixedExpense, updateFixedExpense } from "./actions";
 import type { Category } from "@prisma/client";
 import { CurrencyInput } from "@/components/ui/currency-input";
 import { formatCLP, parseCLP } from "@/lib/format";

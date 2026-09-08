@@ -5,9 +5,8 @@ import { useRouter } from "next/navigation";
 import { Plus, CreditCard as CreditCardIcon, CheckCircle2, Circle } from "lucide-react";
 import { CreditCardFormModal } from "./credit-card-form-modal";
 import { PurchaseFormModal } from "./purchase-form-modal";
-import { toggleInstallmentPaid } from "@/lib/actions/credit-card";
+import { toggleInstallmentPaid, deleteCreditCardPurchase } from "./actions";
 import type { Category } from "@prisma/client";
-import { deleteCreditCardPurchase } from "@/lib/actions/credit-card";
 import { Trash2 } from "lucide-react";
 
 type ActivePurchase = {

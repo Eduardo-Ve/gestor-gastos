@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
-import { createCreditCard } from "@/lib/actions/credit-card";
+import { createCreditCard } from "./actions";
 import { CurrencyInput } from "@/components/ui/currency-input";
 import { parseCLP } from "@/lib/format";
 
