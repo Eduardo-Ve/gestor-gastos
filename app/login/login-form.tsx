@@ -131,6 +131,18 @@ export function LoginForm() {
               Regístrate gratis
             </Link>
           </p>
+
+          <p className="text-center text-[11px] text-muted-foreground/60 mt-6">
+            Al continuar aceptas nuestros{" "}
+            <Link href="/terms" className="underline hover:text-muted-foreground">
+              Términos de Servicio
+            </Link>{" "}
+            y nuestra{" "}
+            <Link href="/privacy" className="underline hover:text-muted-foreground">
+              Política de Privacidad
+            </Link>
+            .
+          </p>
         </div>
       </div>
     </div>
