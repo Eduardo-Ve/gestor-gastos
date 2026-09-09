@@ -7,10 +7,8 @@ export default async function RegisterPage() {
   if (session?.user) redirect("/dashboard");
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
+    <div className="min-h-screen flex items-stretch md:items-center justify-center bg-background text-foreground md:p-6">
       <RegisterForm />
-
     </div>
-
   );
 }
