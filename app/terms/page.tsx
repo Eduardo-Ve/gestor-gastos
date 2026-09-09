@@ -19,7 +19,7 @@ export default function TermsPage() {
 
       <p className="mb-8">
         Al acceder o usar Tu Saldo (&quot;la aplicación&quot;), disponible en
-        tusaldo.online, aceptas los siguientes Términos de Servicio. Si no estás de
+        finanzas.devportftool.dpdns.org, aceptas los siguientes Términos de Servicio. Si no estás de
         acuerdo con ellos, no debes usar la aplicación.
       </p>
 

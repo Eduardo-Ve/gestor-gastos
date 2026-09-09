@@ -16,7 +16,7 @@ export default function PrivacyPage() {
       <p className="mb-8">
         Esta Política de Privacidad describe cómo Tu Saldo (&quot;la aplicación&quot;,
         &quot;nosotros&quot;) recopila, usa y protege la información de las personas
-        usuarias que acceden a través de tusaldo.online.
+        usuarias que acceden a través de finanzas.devportftool.dpdns.org.
       </p>
 
       <section className="mb-8">
