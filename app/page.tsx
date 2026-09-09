@@ -8,7 +8,7 @@ import { MobileNav } from "@/components/landing/mobile-nav";
 import { DashboardMockup, CreditCardMockup } from "@/components/landing/mockups";
 
 // TODO: reemplazar por el dominio real cuando esté disponible
-const SITE_URL = "https://finanzas-app.example.com";
+const SITE_URL = "https://finanzas.devportftool.dpdns.org/";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -158,7 +158,7 @@ function Hero() {
     <section className="mx-auto grid max-w-6xl gap-14 px-6 py-20 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:py-28">
       <div className="opacity-0 motion-safe:animate-[fadeUp_0.6s_ease-out_forwards]">
         <h1 className="text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl">
-          Sabes en qué se te fue la plata, antes de que se te vuelva a ir.
+          ¿Sabes en qué se te fue la plata?, antes de que se te vuelva a ir.
         </h1>
         <p className="mt-5 max-w-md text-lg text-[#9195A0]">
           Registra tus movimientos, arma presupuestos por categoría y no pierdas de vista los gastos fijos ni las

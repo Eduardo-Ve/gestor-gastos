@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = "https://finanzas-app.example.com"; // TODO: reemplazar
+  const baseUrl = "https://finanzas.devportftool.dpdns.org/"; // TODO: reemplazar
 
   return {
     rules: {
