@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Política de Privacidad — Tu Saldo",
@@ -8,6 +9,9 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <main className="mx-auto max-w-3xl px-6 py-16 text-slate-800 dark:text-slate-100">
+      <Link href="/login" className="mb-6 inline-block text-sm text-slate-500 underline hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+        ← Volver a iniciar sesión
+      </Link>
       <h1 className="mb-2 text-3xl font-bold">Política de Privacidad — Tu Saldo</h1>
       <p className="mb-10 text-sm text-slate-500 dark:text-slate-400">
         Última actualización: 9 de septiembre de 2026
