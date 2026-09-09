@@ -16,6 +16,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Finanzas",
   description: "Gestor de gastos personales",
+  icons: {
+    icon: "/finance-mark.svg",
+    shortcut: "/finance-mark.svg",
+    apple: "/finance-mark.svg",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

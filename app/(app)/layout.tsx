@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import { Menu, Wallet, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { UserAvatar } from "@/lib/user-avatar";
 
 const NAV_ITEMS = [
@@ -79,9 +80,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Sidebar desktop (igual que antes) */}
       <aside className="hidden md:flex md:h-screen md:sticky md:top-0 md:flex-col md:w-56 md:shrink-0 md:border-r md:border-sidebar-border md:bg-sidebar md:px-4 md:py-6">
         <div className="flex items-center gap-2 px-2 mb-8">
-          <div className="h-7 w-7 rounded-md bg-primary flex items-center justify-center">
-            <Wallet size={15} className="text-primary-foreground" />
-          </div>
+          <Image src="/finance-mark.svg" alt="" width={28} height={28} className="h-7 w-7 rounded-md" priority />
           <span className="font-semibold tracking-tight text-[15px] text-sidebar-foreground">Finanzas</span>
         </div>
 

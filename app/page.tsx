@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { Wallet, Receipt, PiggyBank, Repeat, CreditCard, ShieldCheck, Lock, KeyRound } from "lucide-react";
+import { Receipt, PiggyBank, Repeat, CreditCard, ShieldCheck, Lock, KeyRound } from "lucide-react";
 import { MobileNav } from "@/components/landing/mobile-nav";
 import { DashboardMockup, CreditCardMockup } from "@/components/landing/mockups";
 
@@ -111,9 +112,7 @@ function Header() {
     <header className="sticky top-0 z-40 border-b border-[#1E1E21] bg-[#0A0A0B]/95 backdrop-blur">
       <div className="relative mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-md bg-[#F2F2F3] text-[#0A0A0B]">
-            <Wallet className="h-4 w-4" aria-hidden="true" />
-          </span>
+          <Image src="/finance-mark.svg" alt="" width={32} height={32} className="h-8 w-8 rounded-md" priority />
           <span className="font-semibold">Finanzas</span>
         </Link>
 
