@@ -69,6 +69,11 @@ export function SettingsClient({ profile }: { profile: Profile }) {
     }
   }
 
+  async function handleSignOut() {
+    await signOut({ redirect: false });
+    window.location.assign("/login");
+  }
+
   return (
     <div className="min-h-screen w-full bg-background text-foreground px-5 py-6 md:px-8 md:py-8 max-w-2xl mx-auto">
       <h1 className="text-lg font-semibold tracking-tight mb-6">Configuración</h1>
@@ -207,7 +212,7 @@ export function SettingsClient({ profile }: { profile: Profile }) {
         </button>
       </div>
 
-      <button onClick={() => signOut({ callbackUrl: "/login" })} className="text-sm text-rose-500 hover:underline">
+      <button onClick={handleSignOut} className="text-sm text-rose-500 hover:underline">
         Cerrar sesión
       </button>
     </div>
