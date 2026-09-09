@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { toIconSentinel, getAvatarIconKey, type AvatarIconKey } from "@/lib/avatar-icons";
+import { passwordSchema } from "@/lib/password-policy";
 
 async function requireUserId() {
   const session = await auth();
@@ -54,8 +55,9 @@ export async function updateProfile(data: { name: string; avatarIcon: AvatarIcon
 export async function changePassword(data: { currentPassword: string; newPassword: string }) {
   const userId = await requireUserId();
 
-  if (data.newPassword.length < 8) {
-    throw new Error("La nueva contraseña debe tener al menos 8 caracteres");
+  const passwordResult = passwordSchema.safeParse(data.newPassword);
+  if (!passwordResult.success) {
+    throw new Error(passwordResult.error.issues[0]?.message ?? "La contraseña no cumple los requisitos");
   }
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -66,6 +68,6 @@ export async function changePassword(data: { currentPassword: string; newPasswor
     if (!valid) throw new Error("La contraseña actual es incorrecta");
   }
 
-  const hashed = await bcrypt.hash(data.newPassword, 10);
+  const hashed = await bcrypt.hash(passwordResult.data, 10);
   await prisma.user.update({ where: { id: userId }, data: { password: hashed } });
 }

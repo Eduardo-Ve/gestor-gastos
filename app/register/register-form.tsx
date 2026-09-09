@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Check, LockKeyhole, Mail, UserRound } from "lucide-react";
 import { register, type RegisterState } from "./actions";
+import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH, PASSWORD_REQUIREMENTS } from "@/lib/password-policy";
 
 const initialState: RegisterState = undefined;
 
@@ -75,13 +76,19 @@ export function RegisterForm() {
             <input
               name="password"
               type="password"
-              placeholder="Contraseña (mín. 6 caracteres)"
+              placeholder={`Contraseña (mín. ${PASSWORD_MIN_LENGTH} caracteres)`}
               autoComplete="new-password"
               required
-              minLength={6}
+              minLength={PASSWORD_MIN_LENGTH}
+              maxLength={PASSWORD_MAX_LENGTH}
               className="w-full pl-10 pr-3.5 py-3.5 bg-background border border-border rounded-md text-[15px] outline-none transition-colors focus:border-border-hover focus:ring-2 focus:ring-white/5"
             />
           </label>
+          <ul className="-mt-2 space-y-1 text-[11px] text-muted-foreground">
+            {PASSWORD_REQUIREMENTS.map((requirement) => (
+              <li key={requirement}>• {requirement}</li>
+            ))}
+          </ul>
 
           <button
             type="submit"

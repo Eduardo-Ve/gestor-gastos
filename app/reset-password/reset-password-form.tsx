@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { resetPassword, type ResetPasswordState } from "./actions";
+import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH, PASSWORD_REQUIREMENTS } from "@/lib/password-policy";
 
 const initialState: ResetPasswordState = {};
 
@@ -29,10 +30,16 @@ export function ResetPasswordForm({ token }: { token: string }) {
         type="password"
         placeholder="Nueva contraseña"
         autoComplete="new-password"
-        minLength={6}
+        minLength={PASSWORD_MIN_LENGTH}
+        maxLength={PASSWORD_MAX_LENGTH}
         required
         className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm"
       />
+      <ul className="-mt-1 space-y-1 text-[11px] text-muted-foreground">
+        {PASSWORD_REQUIREMENTS.map((requirement) => (
+          <li key={requirement}>• {requirement}</li>
+        ))}
+      </ul>
       <button
         type="submit"
         disabled={isPending}

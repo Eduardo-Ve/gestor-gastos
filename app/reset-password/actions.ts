@@ -3,11 +3,12 @@
 import { createHash } from "node:crypto";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
+import { passwordSchema } from "@/lib/password-policy";
 import { z } from "zod";
 
 const resetPasswordSchema = z.object({
   token: z.string().min(1),
-  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres").max(72),
+  password: passwordSchema,
 });
 
 export type ResetPasswordState = {

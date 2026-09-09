@@ -7,6 +7,7 @@ import { updateProfile, changePassword } from "./actions";
 import { UserAvatar } from "@/lib/user-avatar";
 import { AVATAR_ICONS, type AvatarIconKey } from "@/lib/avatar-icons";
 import { AVATAR_COLORS } from "@/lib/avatar-icons";
+import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH, PASSWORD_REQUIREMENTS } from "@/lib/password-policy";
 type Profile = {
   id: string;
   name: string | null;
@@ -165,16 +166,28 @@ export function SettingsClient({ profile }: { profile: Profile }) {
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
+              minLength={PASSWORD_MIN_LENGTH}
+              maxLength={PASSWORD_MAX_LENGTH}
+              autoComplete="new-password"
             className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:border-foreground/40"
           />
         </div>
 
+          <ul className="-mt-1 mb-3 space-y-1 text-[11px] text-muted-foreground">
+            {PASSWORD_REQUIREMENTS.map((requirement) => (
+              <li key={requirement}>• {requirement}</li>
+            ))}
+          </ul>
+
         <div className="mb-4">
           <label className="text-xs text-muted-foreground block mb-1">Confirmar nueva contraseña</label>
           <input
-            type="password"
+              type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
+              minLength={PASSWORD_MIN_LENGTH}
+              maxLength={PASSWORD_MAX_LENGTH}
+              autoComplete="new-password"
             className="w-full bg-background border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:border-foreground/40"
           />
         </div>
