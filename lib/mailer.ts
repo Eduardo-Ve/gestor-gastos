@@ -1,53 +1,34 @@
 import nodemailer from "nodemailer";
 
 function createTransporter() {
-  const user = process.env.GMAIL_USER;
-  const appPassword = process.env.GMAIL_APP_PASSWORD;
+  const host = process.env.SMTP_HOST;
+  const port = Number(process.env.SMTP_PORT ?? 587);
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
 
-  if (!user) {
-    throw new Error("GMAIL_USER no está configurado");
-  }
-
-  if (appPassword) {
-    return nodemailer.createTransport({
-      service: "gmail",
-      auth: { user, pass: appPassword },
-    });
-  }
-
-  const clientId = process.env.GMAIL_CLIENT_ID;
-  const clientSecret = process.env.GMAIL_CLIENT_SECRET;
-  const refreshToken = process.env.GMAIL_REFRESH_TOKEN;
-
-  if (!clientId || !clientSecret || !refreshToken) {
-    throw new Error(
-      "Configura GMAIL_APP_PASSWORD o las variables OAuth2 de Gmail"
-    );
+  if (!host || !user || !pass) {
+    throw new Error("Configura SMTP_HOST, SMTP_USER y SMTP_PASS");
   }
 
   return nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      type: "OAuth2",
-      user,
-      clientId,
-      clientSecret,
-      refreshToken,
-    },
+    host,
+    port,
+    secure: false, // true solo si usas puerto 465
+    auth: { user, pass },
   });
 }
 
 export async function sendPasswordResetEmail(email: string, resetUrl: string) {
-  const user = process.env.GMAIL_USER;
-  if (!user) {
-    throw new Error("GMAIL_USER no está configurado");
+  const from = process.env.EMAIL_FROM;
+  if (!from) {
+    throw new Error("EMAIL_FROM no está configurado");
   }
 
   const transporter = createTransporter();
   const safeResetUrl = resetUrl.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
 
   return transporter.sendMail({
-    from: `Finanzas <${user}>`,
+    from: `Finanzas <${from}>`,
     to: email,
     subject: "Restablece tu contraseña de Finanzas",
     text: [
