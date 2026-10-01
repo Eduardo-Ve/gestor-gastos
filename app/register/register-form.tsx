@@ -5,10 +5,12 @@ import Link from "next/link";
 import { ArrowLeft, Check, LockKeyhole, Mail, UserRound } from "lucide-react";
 import { register, type RegisterState } from "./actions";
 import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH, PASSWORD_REQUIREMENTS } from "@/lib/password-policy";
+import { AuthDivider } from "@/components/auth/auth-divider";
+import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 
 const initialState: RegisterState = undefined;
 
-export function RegisterForm() {
+export function RegisterForm({ googleErrorMessage }: { googleErrorMessage?: string }) {
   const [state, formAction, isPending] = useActionState(register, initialState);
 
   return (
@@ -38,6 +40,9 @@ export function RegisterForm() {
       <div className="w-full md:w-[380px] px-7 py-8 md:px-9 md:py-12 bg-card md:border-l md:border-border flex flex-col justify-center">
         <h2 className="text-xl font-medium mb-1">Crear cuenta</h2>
         <p className="text-sm text-muted-foreground mb-7">Configura tu espacio financiero</p>
+
+        <GoogleSignInButton errorMessage={googleErrorMessage} />
+        <AuthDivider />
 
         <form action={formAction} autoComplete="on" className="flex flex-col gap-4">
           {state?.error && (

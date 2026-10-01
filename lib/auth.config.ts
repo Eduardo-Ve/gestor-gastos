@@ -4,6 +4,10 @@ import { seedDefaultCategories } from "./seed-categories";
 
 export const authConfig: NextAuthConfig = {
   trustHost: true,
+  pages: {
+    signIn: "/login",
+    error: "/login",
+  },
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
