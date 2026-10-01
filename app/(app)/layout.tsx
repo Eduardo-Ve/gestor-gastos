@@ -7,7 +7,6 @@ import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { UserAvatar } from "@/lib/user-avatar";
-import { InstallApplication } from "./install-application";
 
 const NAV_ITEMS = [
   { label: "Resumen", href: "/dashboard" },
@@ -118,10 +117,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </Link>
       </aside>
 
-      <main className="flex-1 min-h-screen px-5 py-6 md:px-8 md:py-8 max-w-6xl">
-        <InstallApplication />
-        {children}
-      </main>
+      <main className="flex-1 min-h-screen px-5 py-6 md:px-8 md:py-8 max-w-6xl">{children}</main>
     </div>
   );
 }
