@@ -15,6 +15,10 @@ function isIosDevice() {
   );
 }
 
+function isAndroidDevice() {
+  return typeof navigator !== "undefined" && /android/i.test(navigator.userAgent);
+}
+
 export function InstallApplication() {
   const { data: session, status } = useSession();
   const { canInstall, isInstalled, promptInstall } = usePwaInstall();
@@ -24,7 +28,8 @@ export function InstallApplication() {
   if (status !== "authenticated" || !session?.user?.id || isInstalled) return null;
 
   const showIosInstructions = !canInstall && isIosDevice();
-  if (!canInstall && !showIosInstructions) return null;
+  const showAndroidInstructions = !canInstall && isAndroidDevice();
+  if (!canInstall && !showIosInstructions && !showAndroidInstructions) return null;
 
   async function handleInstall() {
     setIsPrompting(true);
@@ -46,6 +51,10 @@ export function InstallApplication() {
         {showIosInstructions ? (
           <p className="mt-1 text-xs text-muted-foreground">
             Usa Compartir y selecciona «Añadir a pantalla de inicio» para acceder más rápido.
+          </p>
+        ) : showAndroidInstructions ? (
+          <p className="mt-1 text-xs text-muted-foreground">
+            Abre el menú del navegador y selecciona «Instalar aplicación» o «Añadir a pantalla de inicio».
           </p>
         ) : (
           <p className="mt-1 text-xs text-muted-foreground">
