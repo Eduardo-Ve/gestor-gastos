@@ -7,8 +7,7 @@ import { Receipt, PiggyBank, Repeat, CreditCard, ShieldCheck, Lock, KeyRound } f
 import { MobileNav } from "@/components/landing/mobile-nav";
 import { DashboardMockup, CreditCardMockup } from "@/components/landing/mockups";
 
-// TODO: reemplazar por el dominio real cuando esté disponible
-const SITE_URL = "https://finanzas.devportftool.dpdns.org/";
+const SITE_URL = "https://finanzas.eduardovelasquez.dev/";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
